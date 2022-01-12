@@ -22,14 +22,18 @@ public class PercolationStats {
         for (int i = 0; i < trials; i++) {
             Percolation perc = new Percolation(n);
             int t = n;
-            perc.rndOpen(n);
+            if (n < 4) t = 1;
+            perc.rndOpen(t);
             while(!perc.percolates()) {
                 perc.rndOpen(1);
                 t++;
-                if (perc.percolates())
-                    this.trials[i] = 1.0*t/(n*n);
+                if (perc.percolates()) {
+                    this.trials[i] = 1.0 * t / (n * n);
+                    break;
+                }
             }
             println("try: " + i + "  t: " + t + "   th " + this.trials[i]);
+            //if (t<3) perc.display();
         }
     }
 
@@ -56,7 +60,7 @@ public class PercolationStats {
 
     public static void main(String[] args) {
         Stopwatch sw = new Stopwatch();
-        PercolationStats stats = new PercolationStats(200, 100);
+        PercolationStats stats = new PercolationStats(3, 10000);
         double time = sw.elapsedTime();
         println("mean                    = " + stats.mean());
         println("stddev                  = " + stats.stddev());

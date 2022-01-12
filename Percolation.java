@@ -6,6 +6,9 @@
 
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.Stopwatch;
+import static edu.princeton.cs.algs4.StdOut.print;
+import static edu.princeton.cs.algs4.StdOut.println;
 
 public class Percolation {
     class Grid {
@@ -131,22 +134,41 @@ public class Percolation {
         while (i < n) {
             int row = StdRandom.uniform(this.n) + 1;
             int col = StdRandom.uniform(this.n) + 1;
-            if (isOpen(row, col)) continue;
-            open(row, col);
-            i++;
+            if (!isOpen(row, col)) {
+                open(row, col);
+                i++;
+                display();
+            }
         }
     }
 
+    public void display() {
+        String str = "";
+        for (int i = 1; i <= n; i++) {
+            if (i == 1) str += "[ ";
+            else str += "  ";
+            for (int j = 1; j <= n; j++) {
+                str += isOpen(i, j) ? "1 " : "0 ";
+            }
+            if (i == n) str += "]\n";
+            else str += " \n";
+        }
+        print(str);
+    }
+
     public static void main(String[] args) {
+        Stopwatch sw = new Stopwatch();
         Percolation percolation = new Percolation(10);
         percolation.rndOpen(60);
-        StdOut.println(percolation.numberOfOpenSites());
         // StdOut.println(percolation.isOpen(10, 2));
         // StdOut.println(percolation.isOpen(2, 2));
         // StdOut.println(percolation.percolates());
         // percolation.open(3, 3);
         // StdOut.println(percolation.percolates());
         // percolation.open(7, 3);
+        StdOut.println(percolation.numberOfOpenSites());
         StdOut.println(percolation.percolates());
+        double time = sw.elapsedTime();
+        println("elapsed time: " + time);
     }
 }

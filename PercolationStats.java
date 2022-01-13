@@ -1,7 +1,7 @@
 /* *****************************************************************************
  *  Name:              Junichi Hirota
  *  Coursera User ID:
- *  Last modified:     2022-01-11
+ *  Last modified:     2022-01-13
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.StdOut;
@@ -28,7 +28,6 @@ public class PercolationStats {
             } while (!perc.percolates());
             this.trials[i] = 1.0 * t / (n * n);
 //            StdOut.println(i + "  t: " + t + "   th " + this.trials[i]);
-//            StdOut.println(perc.WQUcount);
         }
     }
 

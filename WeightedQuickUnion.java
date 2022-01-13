@@ -4,6 +4,7 @@
  *  Last modified:     2022-01-11
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class WeightedQuickUnion {
@@ -20,15 +21,12 @@ public class WeightedQuickUnion {
     }
 
     public int root(int i) {
-        while (i!=id[i]) {
-            id[i] = id[id[i]];
-            i = id[i];
-        }
+        while (i != id[i]) i = id[i];
         return i;
     }
 
     public boolean connected(int p, int q) {
-        return root(p)==root(q);
+        return root(p) == root(q);
     }
 
     public void union(int p, int q) {
@@ -47,13 +45,13 @@ public class WeightedQuickUnion {
     public void print() {
         String str = "array [";
         for (int i = 0; i < id.length; i++) {
-            str += " " + id[i];
+            str = str.concat(" " + id[i]);
         }
         str += "]";
         StdOut.println(str);
         str = "size: [";
         for (int i = 0; i < sz.length; i++) {
-            str += " " + sz[i];
+            str = str.concat(" " + sz[i]);
         }
         str += "]";
         StdOut.println(str);
@@ -61,18 +59,15 @@ public class WeightedQuickUnion {
 
 
     public static void main(String[] args) {
-        WeightedQuickUnion a = new WeightedQuickUnion(11);
-        a.print();
-        a.union(5,2);
-        a.print();
-        a.union(7,3);
-        a.print();
-        a.union(1,5);
-        a.print();
-        a.union(7,5);
-        a.print();
-        StdOut.println(a.connected(7,2));
-        StdOut.println(a.connected(7,5));
-        StdOut.println(a.connected(3,5));
+        int n = StdIn.readInt();
+        WeightedQuickUnion uf = new WeightedQuickUnion(n);
+        while (!StdIn.isEmpty()) {
+            int p = StdIn.readInt();
+            int q = StdIn.readInt();
+            if (!uf.connected(p, q)) {
+                uf.union(p, q);
+                StdOut.println(p + " " + q);
+            }
+        }
     }
 }

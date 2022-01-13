@@ -9,92 +9,86 @@ import edu.princeton.cs.algs4.Stopwatch;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private boolean[] sites;
-    private int n;
-    private WeightedQuickUnionUF qu;
+    private final boolean[] open;
+    private final int n;
+    private final int vb;
+    private final WeightedQuickUnionUF qu;
+    private int openCount = 0;
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
         if (n <= 0) throw new IllegalArgumentException();
         this.n = n;
-        sites = new boolean[n*n];
-        for (int i = 0; i < n*n; i++) {
-            sites[i] = false;
+        open = new boolean[n*n+2];
+        for (int i = 0; i < n*n+2; i++) {
+            open[i] = false;
         }
-        qu = new WeightedQuickUnionUF(n*n);
-    }
-
-    private void checkLimits(int row, int col) {
-        if (row < 1 || col < 1 || row > n || col > n)
-            throw new IllegalArgumentException();
+        vb = n*n+1;
+        qu = new WeightedQuickUnionUF(n*n+2);
+        for (int i = 1; i <= n; i++) {
+            qu.union(i, 0);
+            qu.union(n*(n-1)+i, vb);
+        }
     }
 
     private int index(int row, int col) {
-        checkLimits(row, col);
-        return (row-1) * n + col-1;
-    }
+        if (row < 1 || col < 1 || row > n || col > n)
+            throw new IllegalArgumentException();
 
-    private boolean connected(int row1, int col1, int row2, int col2) {
-        int p = index(row1, col1);
-        int q = index(row2, col2);
-        return qu.find(p) == qu.find(q);
+        return (row-1) * n + col;
     }
 
 
     // opens the site (row, col) if it is not open already
     public void open(int row, int col) {
         int i = index(row, col);
-        if (!sites[i]) {
-            sites[i] = true;
+        if (!open[i]) {
+            open[i] = true;
+            openCount++;
+            if (row == 1) open[0] = true;
             // check 4 sides
             if (row > 1) {
                 int j = index(row-1, col);
-                if (sites[j]) qu.union(i, j);
-            }
-            if (col > 1) {
-                int j = index(row, col-1);
-                if (sites[j]) qu.union(i, j);
+                if (open[j]) qu.union(i, j);
             }
             if (row < n) {
                 int j = index(row+1, col);
-                if (sites[j]) qu.union(i, j);
+                if (open[j]) qu.union(i, j);
+            }
+            if (col > 1) {
+                int j = index(row, col-1);
+                if (open[j]) qu.union(i, j);
             }
             if (col < n) {
                 int j = index(row, col+1);
-                if (sites[j]) qu.union(i, j);
+                if (open[j]) qu.union(i, j);
             }
         }
     }
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
-        return sites[index(row, col)];
+        return open[index(row, col)];
     }
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
-        return !isOpen(row, col);
+        int i = index(row, col);
+        if (!open[i]) return false;
+        int p = qu.find(0);
+        int q = qu.find(i);
+        return (p == q);
     }
 
     // returns the number of open sites
-    public int numberOfOpenSites() {
-        int no = 0;
-        for (int i = 0; i < n * n; i++)
-            if (sites[i]) no++;
-        return no;
-    }
+    public int numberOfOpenSites() { return openCount; }
 
     // does the system percolate?
     public boolean percolates() {
-        for (int i = 1; i <= n; i++) {
-            if (isOpen(1, i)) {
-                for (int j = 1; j <= n; j++)
-                    if (isOpen(n, j))
-                        if (connected(1, i, n, j)) return true;
-            }
-        }
-
-        return false;
+        if (!open[0]) return false;
+        int p = qu.find(0);
+        int q = qu.find(vb);
+        return (p == q);
     }
 
     public static void main(String[] args) {

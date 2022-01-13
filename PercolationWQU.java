@@ -22,7 +22,7 @@ public class PercolationWQU {
     }
 
     private Grid[] sites;
-    private int n;
+    private final int n;
 
     // creates n-by-n grid, with all sites initially blocked
     public PercolationWQU(int n) {
@@ -103,7 +103,13 @@ public class PercolationWQU {
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
-        return !isOpen(row, col);
+        if (!isOpen(row, col)) return false;
+        for (int i = 1; i <= n; i++) {
+            if (isOpen(1, i))
+                if (connected(1, i, row, col))
+                    return true;
+        }
+        return false;
     }
 
     // returns the number of open sites

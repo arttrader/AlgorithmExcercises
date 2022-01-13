@@ -48,7 +48,7 @@ public class Percolation {
 
     public int root(int i) {
         while (i!=sites[i].group) {
-            sites[i].group = sites[sites[i].group].group;
+//            sites[i].group = sites[sites[i].group].group;
             i = sites[i].group;
         }
         return i;
@@ -66,6 +66,7 @@ public class Percolation {
             sites[pr].size += sites[qr].size;
         }
     }
+
     public boolean connected(int row1, int col1, int row2, int col2) {
         int p = index(row1, col1);
         int q = index(row2, col2);
@@ -118,9 +119,9 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i <= n; i++) {
             if (isOpen(1, i)) {
-                for (int j = 1; j < n; j++)
+                for (int j = 1; j <= n; j++)
                     if (isOpen(n, j))
                         if (connected(1, i, n, j)) return true;
             }
@@ -137,7 +138,7 @@ public class Percolation {
             if (!isOpen(row, col)) {
                 open(row, col);
                 i++;
-                display();
+                // display();
             }
         }
     }
@@ -154,6 +155,12 @@ public class Percolation {
             else str += " \n";
         }
         print(str);
+        str = "";
+        for (int i = 0; i < n*n; i++) {
+            str += sites[i].group + " ";
+        }
+        print(str);
+        println(", percolates: " + (percolates() ? "true" : "false"));
     }
 
     public static void main(String[] args) {

@@ -28,7 +28,7 @@ public class WeightedQuickUnion {
     private int find(int p) {
         return root(p);
     }
-    
+
     public boolean connected(int p, int q) {
         return root(p) == root(q);
     }

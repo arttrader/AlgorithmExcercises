@@ -49,11 +49,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (n < 1) throw new NoSuchElementException();
 
         int c = StdRandom.uniform(n);
-        StdOut.println("removing randomly c: " + c + "    n: " + n);
+//        StdOut.println("removing randomly c: " + c + "    n: " + n);
         Item item = (Item) list[c];
         n--;
         for (int i = c; i < n; i++) list[i] = list[i+1];
-//        if (n > 0 && n <= list.length/4) resize(list.length/2);
+        if (n > 0 && n <= list.length/4 && list.length/2 > INITIAL_SIZE)
+            resize(list.length/2);
         return item;
     }
 
@@ -68,16 +69,26 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {
         return new Iterator<Item>() {
-            private int ni = n;
+            private int ni = 0;
+            private int[] ui = new int[n];
 
-            public boolean hasNext() { return ni > 0; }
+            private boolean exists(int v) {
+                for (int i = 0; i < ni; i++) if (ui[i] == v) return true;
+                return false;
+            }
+
+            public boolean hasNext() { return n-ni > 0; }
 
             public Item next() {
-                if (ni == 0) throw new NoSuchElementException();
+                if (n-ni <= 0) throw new NoSuchElementException();
 
                 int c = StdRandom.uniform(n);
+                while (ni > 0 && exists(c)) {
+                    c = StdRandom.uniform(n);
+                }
+                ui[ni] = c;
                 Item item = (Item) list[c];
-                ni--;
+                ni++;
                 return item;
             }
         };
@@ -90,11 +101,19 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         q.enqueue("item2");
         q.enqueue("test3");
         q.enqueue("test4");
-        q.dequeue();
+//        q.dequeue();
 //        q.display();
         Iterator<String> it = q.iterator();
         while (it.hasNext()) {
             StdOut.println(it.next());
+        }
+
+        RandomizedQueue<Integer> queue = new RandomizedQueue<>();
+        for (int j = 1; j <= 10; j++)
+            queue.enqueue(j);
+        Iterator<Integer> iterator = queue.iterator();
+        while (iterator.hasNext()) {
+            StdOut.println(iterator.next());
         }
     }
 }

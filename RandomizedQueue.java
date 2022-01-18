@@ -27,7 +27,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public boolean isEmpty() { return n == 0; }
 
     // return the number of items on the randomized queue
-    public int n() { return n; }
+    public int size() { return n; }
 
     private void resize(int newSize) {
         Object[] copy = new Object[newSize];

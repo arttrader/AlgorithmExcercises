@@ -1,7 +1,7 @@
 /* *****************************************************************************
- *  Name:              Ada Lovelace
- *  Coursera User ID:  123456
- *  Last modified:     October 16, 1842
+ *  Name:              J Hirota
+ *  Coursera User ID:
+ *  Last modified:     2022-1-17
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.StdOut;
@@ -109,9 +109,9 @@ public class Deque<Item> implements Iterable<Item> {
         q.addFirst("item2");
         q.addLast("test3");
 
-        Iterator i = q.iterator();
-        while (i.hasNext()) {
-             StdOut.println(i.next());
+        Iterator it = q.iterator();
+        while (it.hasNext()) {
+             StdOut.println(it.next());
         }
     }
 }

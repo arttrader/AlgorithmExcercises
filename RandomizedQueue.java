@@ -10,12 +10,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    private final int INITIAL_SIZE = 100;
+    private static final int INITIAL_SIZE = 500;
     private Object[] list = new Object[INITIAL_SIZE];
     private int n = 0;
 
     // construct an empty randomized queue
-    public RandomizedQueue() {}
+    public RandomizedQueue() { }
 
 /*    private void display() {
         String s = "";
@@ -23,18 +23,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         StdOut.println(s);
     }*/
 
-    // is the randomized queue empty?
-    public boolean isEmpty() { return n == 0; }
-
-    // return the number of items on the randomized queue
-    public int size() { return n; }
-
     private void resize(int newSize) {
         Object[] copy = new Object[newSize];
         for (int i = 0; i < n; i++)
             copy[i] = list[i];
         list = copy;
     }
+
+    // is the randomized queue empty?
+    public boolean isEmpty() { return n < 1; }
+
+    // return the number of items on the randomized queue
+    public int size() { return n; }
 
     // add the item
     public void enqueue(Item item) {
@@ -44,16 +44,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         list[n++] = item;
     }
 
-
     // remove and return a random item
     public Item dequeue() {
         if (n < 1) throw new NoSuchElementException();
 
         int c = StdRandom.uniform(n);
-        Item item = (Item)list[c];
+        StdOut.println("removing randomly c: " + c + "    n: " + n);
+        Item item = (Item) list[c];
         n--;
         for (int i = c; i < n; i++) list[i] = list[i+1];
-        if (n > 0 && n <= list.length/4) resize(list.length/2);
+//        if (n > 0 && n <= list.length/4) resize(list.length/2);
         return item;
     }
 
@@ -62,19 +62,21 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (n < 1) throw new NoSuchElementException();
 
         int c = StdRandom.uniform(n);
-        return (Item)list[c];
+        return (Item) list[c];
     }
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {
         return new Iterator<Item>() {
-            int ni = n;
+            private int ni = n;
 
             public boolean hasNext() { return ni > 0; }
 
             public Item next() {
+                if (ni == 0) throw new NoSuchElementException();
+
                 int c = StdRandom.uniform(n);
-                Item item = (Item)list[c];
+                Item item = (Item) list[c];
                 ni--;
                 return item;
             }
@@ -83,14 +85,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        RandomizedQueue q = new RandomizedQueue();
+        RandomizedQueue<String> q = new RandomizedQueue<>();
         q.enqueue("test1");
         q.enqueue("item2");
         q.enqueue("test3");
         q.enqueue("test4");
-
+        q.dequeue();
 //        q.display();
-        Iterator it = q.iterator();
+        Iterator<String> it = q.iterator();
         while (it.hasNext()) {
             StdOut.println(it.next());
         }

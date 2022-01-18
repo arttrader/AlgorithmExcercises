@@ -12,7 +12,7 @@ import java.util.Iterator;
 public class Permutation {
     public static void main(String[] args) {
         int k = Integer.parseInt(args[0]);
-        RandomizedQueue q = new RandomizedQueue();
+        RandomizedQueue<String> q = new RandomizedQueue<>();
 
         int i = 0;
         while (!StdIn.isEmpty()) {
@@ -24,7 +24,7 @@ public class Permutation {
         int n = i;
 
         if (k <= n) {
-            Iterator it = q.iterator();
+            Iterator<String> it = q.iterator();
             for (i = 0; i < k; i++)
                 StdOut.println(it.next());
         }

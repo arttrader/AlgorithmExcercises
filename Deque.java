@@ -21,7 +21,9 @@ public class Deque<Item> implements Iterable<Item> {
 
     // construct an empty deque
     public Deque() {
-        first = null; last = null; current = null;
+        first = null;
+        last = null;
+        current = null;
     }
 
     // is the deque empty?
@@ -86,17 +88,19 @@ public class Deque<Item> implements Iterable<Item> {
 
     // return an iterator over items in order from front to back
     public Iterator<Item> iterator() {
+        current = first;
+
         return new Iterator<Item>() {
+
             public boolean hasNext() {
                 return current != null;
             }
 
             public Item next() {
-                Item item = null;
-                if (current != null) {
-                    item = current.item;
-                    current = current.next;
-                }
+                if (current == null) throw new NoSuchElementException();
+
+                Item item = current.item;
+                current = current.next;
                 return item;
             }
         };
@@ -104,12 +108,14 @@ public class Deque<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        Deque q = new Deque();
-        q.addLast("test1");
-        q.addFirst("item2");
+        Deque<String> q = new Deque<>();
+        q.addLast("test2");
+        q.addFirst("item1");
         q.addLast("test3");
+        q.removeFirst();
+        q.addLast("test4");
 
-        Iterator it = q.iterator();
+        Iterator<String> it = q.iterator();
         while (it.hasNext()) {
              StdOut.println(it.next());
         }

@@ -10,8 +10,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    private static final int INITIAL_SIZE = 500;
-    private Object[] list = new Object[INITIAL_SIZE];
+    private Object[] list = new Object[100];
     private int n = 0;
 
     // construct an empty randomized queue
@@ -25,8 +24,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private void resize(int newSize) {
         Object[] copy = new Object[newSize];
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++) {
             copy[i] = list[i];
+            list[i] = null;
+        }
         list = copy;
     }
 
@@ -51,10 +52,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int c = StdRandom.uniform(n);
 //        StdOut.println("removing randomly c: " + c + "    n: " + n);
         Item item = (Item) list[c];
+        list[c] = null;
         n--;
         for (int i = c; i < n; i++) list[i] = list[i+1];
-        if (n > 0 && n <= list.length/4 && list.length/2 > INITIAL_SIZE)
-            resize(list.length/2);
+        if (n > 0 && n <= list.length/4) resize(list.length/2);
         return item;
     }
 
@@ -67,32 +68,35 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     // return an independent iterator over items in random order
-    public Iterator<Item> iterator() {
-        return new Iterator<Item>() {
-            private int ni = 0;
-            private int[] ui = new int[n];
+    public Iterator<Item> iterator() { return new ListIterator(); }
 
-            private boolean exists(int v) {
-                for (int i = 0; i < ni; i++) if (ui[i] == v) return true;
-                return false;
-            }
+    private class ListIterator implements Iterator<Item> {
+        private int ni = 0;
+        private Object[] ui = new Object[n];
 
-            public boolean hasNext() { return n-ni > 0; }
+        private void swap(int i, int j) {
+            Object swap = ui[i];
+            ui[i] = ui[j];
+            ui[j] = swap;
+        }
 
-            public Item next() {
-                if (n-ni <= 0) throw new NoSuchElementException();
+        public ListIterator() {
+            for (int i = 0; i < n; i++) ui[i] = list[i];
+            for (int i = n-1; i > 1; i--)
+                swap(i-1, StdRandom.uniform(i));
+        }
 
-                int c = StdRandom.uniform(n);
-                while (ni > 0 && exists(c)) {
-                    c = StdRandom.uniform(n);
-                }
-                ui[ni] = c;
-                Item item = (Item) list[c];
-                ni++;
-                return item;
-            }
-        };
+        public boolean hasNext() { return n-ni > 0; }
+
+        public Item next() {
+            if (n-ni <= 0) throw new NoSuchElementException();
+
+            Item item = (Item) ui[ni];
+            ni++;
+            return item;
+        }
     }
+
 
     // unit testing (required)
     public static void main(String[] args) {

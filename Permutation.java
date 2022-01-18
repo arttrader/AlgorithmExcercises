@@ -14,14 +14,12 @@ public class Permutation {
         int k = Integer.parseInt(args[0]);
         RandomizedQueue<String> q = new RandomizedQueue<>();
 
-        int i = 0;
-        while (!StdIn.isEmpty() && i < k) {
+        while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
             q.enqueue(s);
-            i++;
         }
         Iterator<String> it = q.iterator();
-        for (i = 0; i < k; i++)
+        for (int i = 0; i < k; i++)
             StdOut.println(it.next());
     }
 }

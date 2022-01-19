@@ -55,7 +55,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         if (list.length == n) resize(2*n);
         list[n] = item;
-        if (n > 1) {
+        if (n > 0) {
             int c = StdRandom.uniform(n+1);
             if (c != n) swap(c, n);
         }
@@ -125,18 +125,19 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             StdOut.println(it.next());
         }
 
-        int n = 20;
-        int k = 10;
+        int n = 2;
+        int k = 2;
         int[] oc = new int[n];
         for (int i = 0; i < n; i++) oc[i] = 0;
-
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 5; i++) {
             RandomizedQueue<Integer> queue = new RandomizedQueue<>();
             for (int j = 1; j <= n; j++) queue.enqueue(j);
-            Iterator<Integer> iterator = queue.iterator();
-            for (int j = 1; j <= k; j++) oc[iterator.next()-1]++;
+            for (int j = 1; j <= k; j++) {
+                int c = queue.dequeue();
+                oc[c-1]++;
+                StdOut.println(c);
+            }
         }
-
         for (int i = 0; i < n; i++)
             StdOut.println(i+1 + "  " + oc[i]);
         StdOut.println(StdStats.stddev(oc));

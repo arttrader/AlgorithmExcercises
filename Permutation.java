@@ -19,8 +19,6 @@ public class Permutation {
             q.enqueue(s);
             n++;
         }
-        for (int i = 0; i < n-k; i++)
-            q.dequeue();
         Iterator<String> it = q.iterator();
         for (int i = 0; i < k; i++)
             StdOut.println(it.next());

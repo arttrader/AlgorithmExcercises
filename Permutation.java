@@ -13,11 +13,14 @@ public class Permutation {
     public static void main(String[] args) {
         int k = Integer.parseInt(args[0]);
         RandomizedQueue<String> q = new RandomizedQueue<>();
-
+        int n = 0;
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
             q.enqueue(s);
+            n++;
         }
+        for (int i = 0; i < n-k; i++)
+            q.dequeue();
         Iterator<String> it = q.iterator();
         for (int i = 0; i < k; i++)
             StdOut.println(it.next());

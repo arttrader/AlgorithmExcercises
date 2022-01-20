@@ -29,7 +29,7 @@ public class EggDrop {
     }
 
     public void getCount() {
-        StdOut.println(String.format("Eggs: %s, Tosses: %s", eggs, tosses));
+        StdOut.printf("  Eggs: %s, Tosses: %s", eggs, tosses);
     }
 
     public int findV0() {
@@ -99,28 +99,28 @@ public class EggDrop {
     public static void main(String[] args) {
         int n = 50;
         int t = 35;
-        StdOut.println(String.format("n: %s, T: %s", n, t));
-        StdOut.println(String.format("V0:  1 eggs, <=T tosses: %s", t));
+        StdOut.printf("n: %s, T: %s\n", n, t);
+        StdOut.printf("V0:  1 eggs, <=T tosses: %s", t);
         EggDrop ed0 = new EggDrop(n, t);
         ed0.findV0();
         ed0.getCount();
         StdOut.println();
-        StdOut.println(String.format("V1:  1 lg n eggs: %s, 1 lg n tosses: %s", Math.log(n)/Math.log(2), Math.log(n)/Math.log(2)));
+        StdOut.printf("V1:  1 lg n eggs: %s, 1 lg n tosses: %s", Math.log(n)/Math.log(2), Math.log(n)/Math.log(2));
         EggDrop ed1 = new EggDrop(n, t);
         ed1.findV1();
         ed1.getCount();
         StdOut.println();
-        StdOut.println(String.format("V2:  1 lg T eggs: %s, 2 lg T tosses: %s", Math.log(t)/Math.log(2), 2*Math.log(t)/Math.log(2)));
+        StdOut.printf("V2:  1 lg T eggs: %s, 2 lg T tosses: %s", Math.log(t)/Math.log(2), 2*Math.log(t)/Math.log(2));
         EggDrop ed2 = new EggDrop(n, t);
         ed2.findV2();
         ed2.getCount();
         StdOut.println();
-        StdOut.println(String.format("V3:  2 eggs, 2*sqrt(n) tosses: %s", 2*Math.sqrt(n)));
+        StdOut.printf("V3:  2 eggs, 2*sqrt(n) tosses: %s", 2*Math.sqrt(n));
         EggDrop ed3 = new EggDrop(n, t);
         ed3.findV3();
         ed3.getCount();
         StdOut.println();
-        StdOut.println(String.format("V4:  2 eggs, <= c*sqrt(T) tosses: %s", 2*Math.sqrt(t)));
+        StdOut.printf("V4:  2 eggs, <= c*sqrt(T) tosses: %s", 2*Math.sqrt(t));
         EggDrop ed4 = new EggDrop(n, t);
         ed4.findV4();
         ed4.getCount();

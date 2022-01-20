@@ -1,7 +1,7 @@
 /* *****************************************************************************
  *  Name:              J Hirota
  *  Coursera User ID:
- *  Last modified:     2022-1-18
+ *  Last modified:     2022-1-19
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.StdOut;
@@ -37,10 +37,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         list = copy;
     }
 
-    private void swap(int i, int j) {
-        Object swap = list[i];
-        list[i] = list[j];
-        list[j] = swap;
+    private void swap(Object[] a, int i, int j) {
+        Object swap = a[i];
+        a[i] = a[j];
+        a[j] = swap;
     }
 
     // is the randomized queue empty?
@@ -57,7 +57,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         list[n] = item;
         if (n > 0) {
             int c = StdRandom.uniform(n+1);
-            if (c != n) swap(c, n);
+            if (c != n) swap(list, c, n);
         }
         n++;
     }
@@ -90,13 +90,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         public ListIterator() {
             for (int i = 0; i < n; i++) ui[i] = list[i];
             for (int i = n-1; i > 1; i--)
-                swap(i-1, StdRandom.uniform(i));
-        }
-
-        private void swap(int i, int j) {
-            Object swap = ui[i];
-            ui[i] = ui[j];
-            ui[j] = swap;
+                swap(ui, i-1, StdRandom.uniform(i));
         }
 
         public boolean hasNext() { return n-ni > 0; }
@@ -139,7 +133,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
         }
         for (int i = 0; i < n; i++)
-            StdOut.println(i+1 + "  " + oc[i]);
+            StdOut.printf("%s  %s \n", i+1, oc[i]);
         StdOut.println(StdStats.stddev(oc));
     }
 }

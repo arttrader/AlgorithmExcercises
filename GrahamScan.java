@@ -36,7 +36,6 @@ public class GrahamScan {
     }
 
     public void plot() {
-
 /*        while (!hull.isEmpty()) {
             Point2D p = hull.pop();
             p.drawTo(points[i]);

@@ -28,7 +28,7 @@ public class InsertionSort {
     }
 
     public static void main(String[] args) {
-        int n = 1000;
+        int n = 100000;
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++)
             a[i] = StdRandom.uniform(n);

@@ -1,7 +1,7 @@
 /* *****************************************************************************
- *  Name:              Ada Lovelace
- *  Coursera User ID:  123456
- *  Last modified:     October 16, 1842
+ *  Name:              J Hirota
+ *  Coursera User ID:
+ *  Last modified:     2022-1-15
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.StdOut;

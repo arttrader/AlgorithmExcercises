@@ -18,10 +18,11 @@ public class GrahamScan {
         int n = p.length;
 
         Arrays.sort(p, Point2D.Y_ORDER);
-        Arrays.sort(p, Point2D.R_ORDER);
 
         hull.push(p[0]);
         hull.push(p[1]);
+
+        Arrays.sort(p, p[0].R_ORDER);
 
         for (int i = 2; i < n; i++) {
             Point2D top = hull.pop();

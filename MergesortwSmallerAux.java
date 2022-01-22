@@ -8,37 +8,33 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 
-public class Mergesort {
-    private static final int CUTOFF = 7;
+
+public class MergesortwSmallerAux {
 
     private static void merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi) {
         assert isSorted(a, lo, mid);
         assert isSorted(a, mid+1, hi);
 
-        for (int k = lo; k <= hi; k++) aux[k] = a[k];
+        for (int k = lo; k <= mid; k++) aux[k] = a[k];
 
         int i = lo, j = mid+1;
         for (int k = lo; k <= hi; k++) {
-        if (i > mid)                      { a[k] = aux[j++]; break; }
+        if (i > mid)                        { a[k] = a[j++]; break; }
             else if (j > hi)                a[k] = aux[i++];
-            else if (less(aux[j], aux[i]))  a[k] = aux[j++];
+            else if (less(a[j], aux[i]))    a[k] = a[j++];
             else                            a[k] = aux[i++];
         }
     }
 
     private static void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
-        if (hi <= lo + CUTOFF - 1) {
-            Insertion.sort(a, lo, hi);
-            return;
-        }
         int mid = lo + (hi - lo) / 2;
-        sort(a, aux, lo, mid);
-        sort(a, aux, mid+1, hi);
+        Insertion.sort(a, lo, mid);
+        Insertion.sort(a, mid+1, hi);
         merge(a, aux, lo, mid, hi);
     }
 
     public static void sort(Comparable[] a) {
-        Comparable[] aux = new Comparable[a.length];
+        Comparable[] aux = new Comparable[a.length / 2];
         sort(a, aux, 0, a.length-1);
     }
 
@@ -53,7 +49,7 @@ public class Mergesort {
     }
 
     public static void main(String[] args) {
-        int n = 100000;
+        int n = 100;
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++)
             a[i] = StdRandom.uniform(n);
@@ -61,10 +57,10 @@ public class Mergesort {
 /*        for (int i = 0; i < n; i++)
             StdOut.printf("%s  %s \n", i+1, a[i]);*/
         Stopwatch sw = new Stopwatch();
-        Mergesort.sort(a);
+        MergesortwSmallerAux.sort(a);
         double time = sw.elapsedTime();
         StdOut.println("elapsed time: " + time);
-/*        for (int i = 0; i < n; i++)
-            StdOut.printf("%s  %s \n", i+1, a[i]);*/
+        for (int i = 0; i < n; i++)
+            StdOut.printf("%s  %s \n", i+1, a[i]);
     }
 }

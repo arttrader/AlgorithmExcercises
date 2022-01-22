@@ -8,32 +8,25 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 
-public class Mergesort {
-    private static final int CUTOFF = 7;
-
+public class Mergesort1 {
     private static void merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi) {
         assert isSorted(a, lo, mid);
         assert isSorted(a, mid+1, hi);
 
-        for (int k = lo; k <= hi; k++) aux[k] = a[k];
-
         int i = lo, j = mid+1;
         for (int k = lo; k <= hi; k++) {
-        if (i > mid)                      { a[k] = aux[j++]; break; }
-            else if (j > hi)                a[k] = aux[i++];
-            else if (less(aux[j], aux[i]))  a[k] = aux[j++];
-            else                            a[k] = aux[i++];
+            if (i > mid)                aux[k] = a[j++];
+            else if (j > hi)            aux[k] = a[i++];
+            else if (less(a[j], a[i]))  aux[k] = a[j++];
+            else                        aux[k] = a[i++];
         }
     }
 
     private static void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
-        if (hi <= lo + CUTOFF - 1) {
-            Insertion.sort(a, lo, hi);
-            return;
-        }
+        if (hi <= lo) return;
         int mid = lo + (hi - lo) / 2;
-        sort(a, aux, lo, mid);
-        sort(a, aux, mid+1, hi);
+        sort(aux, a, lo, mid);
+        sort(aux, a, mid+1, hi);
         merge(a, aux, lo, mid, hi);
     }
 
@@ -53,7 +46,7 @@ public class Mergesort {
     }
 
     public static void main(String[] args) {
-        int n = 100000;
+        int n = 10;
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++)
             a[i] = StdRandom.uniform(n);
@@ -61,7 +54,7 @@ public class Mergesort {
 /*        for (int i = 0; i < n; i++)
             StdOut.printf("%s  %s \n", i+1, a[i]);*/
         Stopwatch sw = new Stopwatch();
-        Mergesort.sort(a);
+        Mergesort1.sort(a);
         double time = sw.elapsedTime();
         StdOut.println("elapsed time: " + time);
 /*        for (int i = 0; i < n; i++)

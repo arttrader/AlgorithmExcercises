@@ -1,7 +1,7 @@
 /* *****************************************************************************
- *  Name:              Ada Lovelace
- *  Coursera User ID:  123456
- *  Last modified:     October 16, 1842
+ *  Name:              J Hirota
+ *  Coursera User ID:
+ *  Last modified:     2022-1-19
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.StdOut;
@@ -33,6 +33,21 @@ public class ShuffleLinkedList<Item> implements Iterable<Item> {
         last = null;
     }
 
+    private Node randomMerge(Node list1, Node list2) {
+        int r = StdRandom.uniform(2);
+        if (r > 0) {
+            Node t1 = list1;
+            while (t1.next != null) t1 = t1.next;
+            t1.next = list2;
+            return list1;
+        } else {
+            Node t2 = list2;
+            while (t2.next != null) t2 = t2.next;
+            t2.next = list1;
+            return list2;
+        }
+    }
+
     public void add(Item item) {
         if (first==null) {
             first = new Node(item);
@@ -54,25 +69,21 @@ public class ShuffleLinkedList<Item> implements Iterable<Item> {
     }
 
     public void shuffle() {
-        Node a = first;
-        Node b;
-        for (int i = 1; i < n; i++) {
-            int r = StdRandom.uniform(i+1);
-            if (r < i) {
-                b = getNode(r);
-                swap(a, b);
-            }
-            a = a.next;
-        }
-
+        first = shuffle(first, n);
     }
 
-    private void swap(Node a, Node b) {
-        Node t = a;
-        a = b;
-        b = t;
+    private Node shuffle(Node list, int n) {
+        if (n < 2) return list;
+        int mid = n / 2;
+        Node a = list;
+        if (mid > 1)
+            for (int i = 0; i < mid-1; i++) a = a.next;
+        Node b = a.next;
+        a.next = null;
+        if (mid > 1) a = shuffle(list, mid);
+        if (n - mid > 1) b = shuffle(b, n - mid);
+        return randomMerge(a, b);
     }
-
 
     private Node getNode(int index) {
         Node node = first;
@@ -85,16 +96,16 @@ public class ShuffleLinkedList<Item> implements Iterable<Item> {
     public Iterator<Item> iterator() { return new ListIterator(); }
 
     private class ListIterator implements Iterator<Item> {
-        Node current;
+        private Node current;
 
         public ListIterator() {
             current = first;
         }
 
-        public boolean hasNext() { return current.next != null; }
+        public boolean hasNext() { return current != null; }
 
         public Item next() {
-            if (current.next == null) throw new NoSuchElementException();
+            if (current == null) throw new NoSuchElementException();
 
             Item item = current.item;
             current = current.next;

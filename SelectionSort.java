@@ -8,11 +8,15 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 
-public class InsertionSort {
+public class SelectionSort {
     public static void sort(Comparable[] a) {
-        for (int i = 1; i < a.length; i++)
-            for (int j = i; j >= 1 && less(a[j], a[j-1]); j--)
-                exch(a, j, j-1);
+        int N = a.length;
+        for (int i = 0; i < N; i++) {
+            int min = i;
+            for (int j = i+1; j < N; j++)
+                if (less(a[j], a[min])) min = j;
+            exch(a, i, min);
+        }
     }
 
     private static boolean less(Comparable v, Comparable w) {
@@ -25,6 +29,7 @@ public class InsertionSort {
         a[j] = s;
     }
 
+
     public static void main(String[] args) {
         int n = 100000;
         Integer[] a = new Integer[n];
@@ -34,7 +39,7 @@ public class InsertionSort {
 /*        for (int i = 0; i < n; i++)
             StdOut.printf("%s  %s \n", i+1, a[i]);*/
         Stopwatch sw = new Stopwatch();
-        InsertionSort.sort(a);
+        SelectionSort.sort(a);
         double time = sw.elapsedTime();
         StdOut.println("elapsed time: " + time);
 /*        for (int i = 0; i < n; i++)

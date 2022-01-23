@@ -8,9 +8,7 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 
-
 public class MergesortwSmallerAux {
-
     private static void merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi) {
         assert isSorted(a, lo, mid);
         assert isSorted(a, mid+1, hi);
@@ -19,7 +17,7 @@ public class MergesortwSmallerAux {
 
         int i = lo, j = mid+1;
         for (int k = lo; k <= hi; k++) {
-        if (i > mid)                        { a[k] = a[j++]; break; }
+        if (i > mid)                      { a[k] = a[j]; break; }
             else if (j > hi)                a[k] = aux[i++];
             else if (less(a[j], aux[i]))    a[k] = a[j++];
             else                            a[k] = aux[i++];
@@ -47,6 +45,7 @@ public class MergesortwSmallerAux {
     private static boolean less(Comparable a, Comparable b) {
         return a.compareTo(b) < 0;
     }
+
 
     public static void main(String[] args) {
         int n = 100;

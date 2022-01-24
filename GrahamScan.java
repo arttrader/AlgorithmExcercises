@@ -48,13 +48,6 @@ public class GrahamScan {
 
 /*    public static class Point2Da extends Point2D {
         public final java.util.Comparator<Point2Da> POLAR_ORDER = new PolarOrder();
-//        private final double x, y;
-
-*//*        public Point2D(double x, double y) {
-            super();
-            this.x = x;
-            this.y = y;
-        }*//*
 
         private int ccw(Point2Da a, Point2Da b, Point2Da c) {
             *//* as in previous lecture *//*

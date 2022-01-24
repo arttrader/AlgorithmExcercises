@@ -1,15 +1,15 @@
 /* *****************************************************************************
  *  Name:              J Hirota
  *  Coursera User ID:
- *  Last modified:     2022-1-23
+ *  Last modified:     2022-1-24
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
-    private Point[] points;
-    private int n;
+    private final Point[] points;
+    private final int n;
     private LineSegment[] segments;
 
     public BruteCollinearPoints(Point[] points) {
@@ -17,19 +17,20 @@ public class BruteCollinearPoints {
         if (points == null) throw new IllegalArgumentException();
         n = points.length;
         this.points = new Point[n];
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
             if (points[i] == null) throw new IllegalArgumentException();
+        for (int i = 0; i < n; i++) {
             for (int j = i+1; j < n; j++)
                 if (points[i].compareTo(points[j]) == 0)
                     throw new IllegalArgumentException(points[i].toString());
             this.points[i] = points[i];
         }
-        MergesortComparator.sort(points, new Point.YXOrder());
     }
 
     public int numberOfSegments() {
         // the number of line segments
-        return segments.length;
+        if (segments != null) return segments.length;
+        return 0;
     }
 
     private LineSegment lineSegment(Point p, Point q, Point r, Point s) {
@@ -38,35 +39,47 @@ public class BruteCollinearPoints {
         aux[1] = q;
         aux[2] = r;
         aux[3] = s;
-        MergesortComparator.sort(aux, new Point.YXOrder());
-        return new LineSegment(aux[0], aux[3]);
+        Point minPoint = p;
+        Point maxPoint = p;
+        for (int i = 1; i < 4; i++) {
+            if (aux[i].compareTo(minPoint) < 0) minPoint = aux[i];
+            if (aux[i].compareTo(maxPoint) > 0) maxPoint = aux[i];
+        }
+        return new LineSegment(minPoint, maxPoint);
     }
 
     public LineSegment[] segments() {
         // the line segments
+        if (segments != null) return segments.clone();
+
         Stack<LineSegment> stack = new Stack<>();
         int ns = 0;
         for (int p = 0; p < n; p++)
-            for (int q = p+1; q < n; q++)
-                for (int r = q+1; r < n; r++)
-                    for (int s = r+1; s < n; s++) {
-                        double spq = points[p].slopeTo(points[q]);
-                        double spr = points[p].slopeTo(points[r]);
-                        double sps = points[p].slopeTo(points[s]);
-                        if (spq == spr && spq == sps) {
-/*                            StdOut.println(points[p].toString());
-                            StdOut.println(points[q].toString());
-                            StdOut.println(points[r].toString());
-                            StdOut.println(points[s].toString());*/
-                            LineSegment seg = lineSegment(points[p], points[q], points[r], points[s]);
-                            stack.push(seg);
-                            ns++;
+            for (int q = p+1; q < n; q++) {
+                double spq = points[p].slopeTo(points[q]);
+                for (int r = q + 1; r < n; r++) {
+                    double spr = points[p].slopeTo(points[r]);
+                    if (spq == spr) {
+                        for (int s = r + 1; s < n; s++) {
+                            double sps = points[p].slopeTo(points[s]);
+                            if (spq == sps) {
+    /*                            StdOut.println(points[p].toString());
+                                StdOut.println(points[q].toString());
+                                StdOut.println(points[r].toString());
+                                StdOut.println(points[s].toString());*/
+                                LineSegment seg = lineSegment(points[p], points[q], points[r],
+                                                              points[s]);
+                                stack.push(seg);
+                                ns++;
+                            }
                         }
                     }
+                }
+            }
         segments = new LineSegment[ns];
         int i = 0;
         while (!stack.isEmpty()) segments[i++] = stack.pop();
-        return segments;
+        return segments.clone();
     }
 
 

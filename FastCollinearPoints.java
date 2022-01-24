@@ -1,88 +1,83 @@
 /* *****************************************************************************
  *  Name:              J Hirota
  *  Coursera User ID:
- *  Last modified:     2022-1-23
+ *  Last modified:     2022-1-24
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.Arrays;
+
 public class FastCollinearPoints {
-    private Point[] points;
-    private int n;
-    Stack<LineSegment> stack = new Stack<>();
+    private final Point[] points;
+    private final int n;
     private LineSegment[] segments;
-    private int ns;
 
     public FastCollinearPoints(Point[] points) {
         // finds all line segments containing 4 points
         if (points == null) throw new IllegalArgumentException();
-
         n = points.length;
         this.points = new Point[n];
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
             if (points[i] == null) throw new IllegalArgumentException();
+        for (int i = 0; i < n; i++) {
             for (int j = i+1; j < n; j++)
                 if (points[i].compareTo(points[j]) == 0)
                     throw new IllegalArgumentException(points[i].toString());
             this.points[i] = points[i];
         }
-        MergesortComparator.sort(points, new Point.YXOrder());
+
     }
 
     public int numberOfSegments() {
         // the number of line segments
-        return ns;
+        if (segments != null) return segments.length;
+        return 0;
     }
 
-    private int findPoint(Point p) {
-        for (int i = 0; i < n; i++)
-            if (points[i].compareTo(p) == 0) return i;
-        return -1;
-    }
-
-    private LineSegment findLineSegment(Point p) {
-        Point[] aux = new Point[n];
-        for (int k = 0; k < n; k++) aux[k] = points[k];
-        MergesortComparator.sort(aux, p.slopeOrder());
-        int pi = findPoint(p);
-        if (pi >= n-3) return null;
-        StdOut.println("origin: " + aux[pi].toString());
-        StdOut.println(aux[pi+1].toString());
-        StdOut.println(aux[pi+2].toString());
-        StdOut.println(aux[pi+3].toString());
-        double spq = aux[pi].slopeTo(aux[pi+1]);
-        double spr = aux[pi].slopeTo(aux[pi+2]);
-        double sps = aux[pi].slopeTo(aux[pi+3]);
-        if (spq == spr && spq == sps) {
-            StdOut.println("Segment found");
-            StdOut.println(aux[pi].toString());
-            StdOut.println(aux[pi+1].toString());
-            StdOut.println(aux[pi+2].toString());
-            StdOut.println(aux[pi+3].toString());
-            LineSegment seg = new LineSegment(aux[pi], aux[pi+3]);
-            return seg;
+    private LineSegment findLineSegment(int pi) {
+        if (pi > n-4) return null;
+        Point p = points[pi];
+        Arrays.sort(points, pi+1, n, p.slopeOrder());
+        // for (Point p1 : points) StdOut.println(p1.toString());
+        // StdOut.println("For point at " + pi + "  " + points[pi].toString());
+        int es = 0;
+        Point minPoint = p;
+        Point maxPoint = p;
+        double rsl = p.slopeTo(points[pi+1]);
+        for (int i = pi+1; i < n; i++) {
+            double sl = p.slopeTo(points[i]);
+            // StdOut.println(points[i].toString() + "   " + sl);
+            if (sl > rsl || sl < rsl) break;
+            if (points[i].compareTo(minPoint) < 0) minPoint = points[i];
+            if (points[i].compareTo(maxPoint) > 0) maxPoint = points[i];
+            es++;
+        }
+        if (es >= 3) {
+//            StdOut.println("Segment found");
+            return new LineSegment(minPoint, maxPoint);
         }
         return null;
     }
 
-    private LineSegment lineSegment(int p, int q, int r, int s) {
-        return new LineSegment(points[p], points[s]);
-    }
-
     public LineSegment[] segments() {
         // the line segments
-        for (int i = 0; i < n; i++) {
-            LineSegment seg = findLineSegment(points[i]);
-            if (seg != null) {
-                stack.push(seg);
-                ns++;
+        if (segments == null) {
+            Stack<LineSegment> stack = new Stack<>();
+            int ns = 0;
+            for (int i = 0; i < n; i++) {
+                LineSegment seg = findLineSegment(i);
+                if (seg != null) {
+                    stack.push(seg);
+                    ns++;
+                }
             }
+            segments = new LineSegment[ns];
+            int i = 0;
+            while (!stack.isEmpty()) segments[i++] = stack.pop();
         }
-        LineSegment[] segments = new LineSegment[ns];
-        int i = 0;
-        while (!stack.isEmpty()) segments[i++] = stack.pop();
-        return segments;
+        return segments.clone();
     }
 
 
@@ -103,6 +98,9 @@ public class FastCollinearPoints {
         p[11] = new Point(1, 5);
         p[12] = new Point(8, 2);
         p[13] = new Point(15, 3);
+        Point p0 = p[0];
+        Arrays.sort(p, 1, n, p0.slopeOrder());
+        for (Point p1 : p) StdOut.println(p1.toString());
 /*        int scale = 50;
         StdDraw.setCanvasSize(800, 800);
         StdDraw.setXscale(0, scale);
@@ -117,11 +115,12 @@ public class FastCollinearPoints {
             p[i].draw();
             StdDraw.show();
         }*/
+
+        /*
         FastCollinearPoints bcp = new FastCollinearPoints(p);
         LineSegment[] segs = bcp.segments();
         StdOut.println(bcp.numberOfSegments());
-        for (int i = 0; i < segs.length; i++) {
-            StdOut.println(segs[i].toString());
-        }
+        for (LineSegment seg : segs) StdOut.println(seg.toString());
+        */
     }
 }

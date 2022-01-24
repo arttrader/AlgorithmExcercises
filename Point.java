@@ -11,7 +11,6 @@
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdRandom;
 
-import java.awt.Color;
 import java.util.Comparator;
 
 public class Point implements Comparable<Point> {
@@ -63,12 +62,17 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
-        if (that.x - this.x == 0)
-            if (that.y - this.y == 0)
+        if (that == null) throw new NullPointerException();
+        if (that.y - this.y == 0)
+            if (that.x - this.x == 0)
                 return Double.NEGATIVE_INFINITY;
             else
+                return 0.0;
+        else
+            if (that.x - this.x == 0)
                 return Double.POSITIVE_INFINITY;
-        return 1.0 * (that.y - this.y) / (that.x - this.x);
+            else
+                return 1.0 * (that.y - this.y) / (that.x - this.x);
     }
 
     /**
@@ -85,6 +89,7 @@ public class Point implements Comparable<Point> {
      */
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
+        if (that == null) throw new NullPointerException();
         if (this.y < that.y) return -1;
         if (this.y > that.y) return +1;
         if (this.x < that.x) return -1;
@@ -103,18 +108,14 @@ public class Point implements Comparable<Point> {
         return new SlopeOrder();
     }
 
-    public static class SlopeOrder implements Comparator<Point> {
+    private class SlopeOrder implements Comparator<Point> {
         public int compare(Point a, Point b) {
-            double slope = a.slopeTo(b);
-            if (slope < 0) return -1;
-            if (slope > 0) return +1;
-            return 0;
-        }
-    }
-
-    public static class YXOrder implements Comparator<Point> {
-        public int compare(Point a, Point b) {
-            return a.compareTo(b);
+            double slope1 = slopeTo(a);
+            double slope2 = slopeTo(b);
+            if (slope1 < slope2) return -1;
+            if (slope1 > slope2) return +1;
+            else return 0;
+ //           return Double.compare(slope1, slope2);
         }
     }
 
@@ -136,8 +137,19 @@ public class Point implements Comparable<Point> {
     public static void main(String[] args) {
         /* YOUR CODE HERE */
         int n = 100;
-        int scale = 50;
         Point[] p = new Point[n];
+/*        p[0] = new Point(4555, 19085);
+        p[1] = new Point(38, 19085);
+        StdOut.println(p[0].slopeTo(p[1]));
+        p[2] = new Point(4555, 19085);
+        p[3] = new Point(38, 19085);
+        StdOut.println(p[2].slopeTo(p[3]));
+        p[4] = new Point(7, 2);
+        p[5] = new Point(8, 2);
+        p[6] = new Point(1, 2);
+        Comparator c = p[4].slopeOrder();
+        StdOut.println(c.compare(p[5], p[6]));*/
+         int scale = 50;
         StdDraw.setCanvasSize(800, 800);
         StdDraw.setXscale(0, scale);
         StdDraw.setYscale(0, scale);
@@ -150,14 +162,14 @@ public class Point implements Comparable<Point> {
             p[i].draw();
             StdDraw.show();
         }
-        Comparator<Point> c = new Point.YXOrder();
-        MergesortComparator.sort(p, c);
-        StdDraw.setPenRadius(0.01);
+/*        Comparator<Point> c = new Point.NaturalOrder();
+        Arrays.sort(p, c);*/
+/*        StdDraw.setPenRadius(0.01);
         StdDraw.setPenColor(Color.PINK);
         for (int i = 0; i < n; i++) {
             p[i].draw();
             StdDraw.show();
             StdDraw.pause(50);
-        }
+        }*/
     }
 }

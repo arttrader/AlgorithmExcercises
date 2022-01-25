@@ -44,6 +44,11 @@ public class MergesortComparator {
         sort(a, aux, 0, a.length-1, c);
     }
 
+    public static void sort(Object[] a, int lo, int hi, Comparator c) {
+        Object[] aux = new Object[a.length];
+        sort(a, aux, lo, hi, c);
+    }
+
     private static boolean isSorted(Object[] a, int lo, int hi, Comparator c) {
         for (int i = lo; i < hi; i++)
             if (less(a[i], a[i+1], c)) return false;

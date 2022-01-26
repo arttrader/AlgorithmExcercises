@@ -9,13 +9,32 @@ import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.TreeSet;
 
 public class FastCollinearPoints {
     private final Point[] points;
     private final int n;
     private final ArrayList<LineSegment> segments;
-    private final TreeSet<Double> slopesUsed;
+    private final ArrayList<CollinearPoint> discovered;
+
+    private class CollinearPoint implements Comparable<CollinearPoint> {
+        Point minPoint;
+        Point maxPoint;
+        double slope;
+
+        public CollinearPoint(Point min, Point max, double sl) {
+            minPoint = min;
+            maxPoint = max;
+            slope = sl;
+        }
+
+        public int compareTo(CollinearPoint c) {
+            if (c.slope < slope) return -1;
+            if (c.slope > slope) return +1;
+            if (c.maxPoint.equals(maxPoint) || c.minPoint.equals(minPoint) ||
+                    c.minPoint.equals(maxPoint) || c.maxPoint.equals(minPoint)) return 0;
+            return 1;
+        }
+    }
 
     public FastCollinearPoints(Point[] points) {
         // finds all line segments containing 4 points or more
@@ -31,11 +50,10 @@ public class FastCollinearPoints {
             this.points[i] = points[i];
         }
         segments = new ArrayList<LineSegment>();
-        slopesUsed = new TreeSet<>();
+        discovered = new ArrayList<>();
 //        findLineSegment(0); // for debug
         for (int i = 0; i < n-3; i++) findLineSegment(i);
     }
-
 
     private void findLineSegment(int pi) {
         // sort for slope with respect to p
@@ -63,18 +81,21 @@ public class FastCollinearPoints {
     private int meetCondition(Point[] aux, Point p, int si) {
         Point minPoint = p;
         Point maxPoint = p;
-        double rsl = p.slopeTo(aux[si]);
+        double rsl = p.slopeTo(points[si]);
         double sl;
         // StdOut.println(points[pi].toString() + "   ref: " + rsl);
         int es = 1;
-        for (int i = si+1; i < aux.length; i++) {
-            sl = p.slopeTo(aux[i]);
+        for (int i = si+1; i < n; i++) {
+            sl = p.slopeTo(points[i]);
             // StdOut.println(points[i].toString() + "   " + sl);
             if (sl > rsl || sl < rsl) {
                 if (es >= 3) {
-                    if (!slopesUsed.contains(sl)) {
+                    CollinearPoint cp = new CollinearPoint(minPoint, maxPoint, rsl);
+                    if (!discovered.contains(cp)) {
+                        StdOut.printf("slope: %s\n", sl);
+                        for (CollinearPoint d : discovered) StdOut.println(d);
                         segments.add(new LineSegment(minPoint, maxPoint));
-                        slopesUsed.add(sl);
+                        discovered.add(cp);
                         return es;
                     }
                 }
@@ -112,9 +133,9 @@ public class FastCollinearPoints {
             int d2 = Integer.parseInt(s2);
             p[i++] = new Point(d1, d2);
         }
-        // Point p0 = p[0];
-        // Arrays.sort(p, 1, n-1, p0.slopeOrder());
-        // for (Point p1 : p) StdOut.println(p1.toString() + "  " + p0.slopeTo(p1));
+        Point p0 = p[0];
+        Arrays.sort(p, 1, n-1, p0.slopeOrder());
+        for (Point p1 : p) StdOut.println(p1.toString() + "  " + p0.slopeTo(p1));
         FastCollinearPoints bcp = new FastCollinearPoints(p);
         LineSegment[] segs = bcp.segments();
         StdOut.println(bcp.numberOfSegments());

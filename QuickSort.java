@@ -8,7 +8,7 @@ import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Comparator;
 
-public class QuickSort {
+public class QuickSort<T> {
     private static int partition(Comparable[] a, int lo, int hi, Comparator c) {
         int i = lo, j = hi+1;
         while (true) {

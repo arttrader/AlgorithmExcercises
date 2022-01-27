@@ -9,7 +9,10 @@
  ******************************************************************************/
 
 import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Point implements Comparable<Point> {
@@ -132,6 +135,30 @@ public class Point implements Comparable<Point> {
      */
     public static void main(String[] args) {
         /* YOUR CODE HERE */
-
+        String line = StdIn.readString();
+        int n = Integer.parseInt(line);
+        StdOut.printf("Input N: %s\n", n);
+        Point[] p = new Point[n];
+        int i = 0;
+        while (!StdIn.isEmpty()) {
+            String s1 = StdIn.readString();
+            String s2 = StdIn.readString();
+            int d1 = Integer.parseInt(s1);
+            int d2 = Integer.parseInt(s2);
+            p[i++] = new Point(d1, d2);
+        }
+        Arrays.sort(p);
+        int scale = 50000;
+        StdDraw.setCanvasSize(800, 800);
+        StdDraw.setXscale(0, scale);
+        StdDraw.setYscale(0, scale);
+        StdDraw.setPenRadius(0.01);
+        StdDraw.enableDoubleBuffering();
+        for (i = 0; i < n; i++) {
+            p[i].draw();
+            StdDraw.show();
+            StdDraw.pause(10);
+        }
+        StdDraw.setPenRadius(0.001);
     }
 }

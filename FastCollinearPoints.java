@@ -14,31 +14,95 @@ import java.util.Comparator;
 public class FastCollinearPoints {
     private final Point[] points;
     private final int n;
-    private ArrayList<LineSegment> segments;
+    private final ArrayList<LineSegment> lineSegments;
+    private final ArrayList<LineSeg> segments;
+    private final boolean useSegmentCheck = false;
 
-    public FastCollinearPoints(Point[] points) {
+    public FastCollinearPoints(Point[] data) {
         // finds all line segments containing 4 points or more
-        if (points == null) throw new IllegalArgumentException();
-        n = points.length;
+        if (data == null) throw new IllegalArgumentException();
+        n = data.length;
         this.points = new Point[n];
         for (int i = 0; i < n; i++)
-            if (points[i] == null) throw new IllegalArgumentException();
+            if (data[i] == null) throw new IllegalArgumentException();
         for (int i = 0; i < n; i++) {
             for (int j = i+1; j < n; j++)
-                if (points[i].compareTo(points[j]) == 0)
-                    throw new IllegalArgumentException(points[i].toString());
-            this.points[i] = points[i];
+                if (data[i].compareTo(data[j]) == 0)
+                    throw new IllegalArgumentException(data[i].toString());
+            this.points[i] = data[i];
         }
-        segments = new ArrayList<LineSegment>();
-
-        Arrays.sort(points, new Comparator<Point>() {
-            public int compare(Point o1, Point o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        lineSegments = new ArrayList<LineSegment>();
+        segments = new ArrayList<LineSeg>();
+        Arrays.sort(this.points, new PointNaturalOrder());
         // findLineSegment(0);
        for (int i = 0; i < n-3; i++) findLineSegment(i);
     }
+
+    private class PointNaturalOrder implements Comparator<Point> {
+        public int compare(Point o1, Point o2) { return o1.compareTo(o2); }
+    }
+    
+    private class LineSeg implements Comparable<LineSeg> {
+        Point minPoint;
+        Point maxPoint;
+        double slope;
+
+        public LineSeg(Point min, Point max, double sl) {
+            minPoint = min;
+            maxPoint = max;
+            slope = sl;
+        }
+
+        public int compareTo(LineSeg c) {
+            int ds = Double.compare(slope, c.slope);
+            if (ds != 0) return ds;
+            if (c.maxPoint.compareTo(maxPoint) == 0)
+                return c.maxPoint.compareTo(maxPoint);
+            else
+                return c.maxPoint.compareTo(maxPoint);
+        }
+
+        public boolean collinear(LineSeg c) {
+            int ds = Double.compare(slope, c.slope);
+            if (ds != 0) return false;
+            return c.maxPoint.compareTo(maxPoint) == 0;
+        }
+
+        public Comparator<LineSeg> slopeOrder() {
+            return new LineSeg.SlopeOrder();
+        }
+
+        private class SlopeOrder implements Comparator<LineSeg> {
+            public int compare(LineSeg a, LineSeg b) {
+                return a.compareTo(b);
+            }
+        }
+
+    }
+
+    private boolean less(LineSeg a, LineSeg b) {
+        return a.compareTo(b) < 0;
+    }
+
+    private boolean containsSegment(LineSeg key) {
+        // use binary search when greater than 6
+        if (segments.size() > 6) {
+            int lo = 0;
+            int hi = segments.size()-1;
+            while (lo <= hi) {
+                int mid = lo + (hi-lo)/2;
+                LineSeg midPoint = segments.get(mid);
+                if (less(key, midPoint)) hi = mid - 1;
+                else if (less(midPoint, key)) lo = mid + 1;
+                else return key.collinear(midPoint);
+            }
+        } else {
+            for (LineSeg c : segments)
+                if (key.collinear(c)) return true;
+        }
+        return false;
+    }
+
 
     private void findLineSegment(int pi) {
         // sort for slope with respect to p
@@ -76,21 +140,31 @@ public class FastCollinearPoints {
             es++;
         }
         if (es >= 3) {
-            segments.add(new LineSegment(minPoint, maxPoint));
-            return es;
+            if (useSegmentCheck) {
+                LineSeg cp = new LineSeg(minPoint, maxPoint, rsl);
+                if (!containsSegment(cp)) {
+                    lineSegments.add(new LineSegment(minPoint, maxPoint));
+                    segments.add((cp));
+                    if (segments.size() > 6) segments.sort(cp.slopeOrder());
+                    return es;
+                }
+            } else {
+                lineSegments.add(new LineSegment(minPoint, maxPoint));
+                return es;
+            }
         }
         return 0;
     }
 
     public int numberOfSegments() {
         // the number of line segments
-        return segments.size();
+        return lineSegments.size();
     }
 
     public LineSegment[] segments() {
         // the line segments
-        final LineSegment[] segs = new LineSegment[segments.size()];
-        segments.toArray(segs);
+        final LineSegment[] segs = new LineSegment[lineSegments.size()];
+        lineSegments.toArray(segs);
         return segs;
     }
 

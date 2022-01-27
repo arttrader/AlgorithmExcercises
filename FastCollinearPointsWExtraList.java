@@ -9,7 +9,6 @@ import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class FastCollinearPointsWExtraList {
@@ -124,7 +123,7 @@ public class FastCollinearPointsWExtraList {
             if (!containsCollinearPoint(cp)) {
                 segments.add(new LineSegment(min, max));
                 discovered.add(cp);
-                Collections.sort(discovered, cp.slopeOrder());
+                if (discovered.size() > 6) discovered.sort(cp.slopeOrder());
                 return es;
             }
         }

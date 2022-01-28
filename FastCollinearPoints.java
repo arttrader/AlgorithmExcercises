@@ -85,11 +85,14 @@ public class FastCollinearPoints {
         // find a group of same slope, then check if it meets condition
         // repeat until the end
         Point p = points[pi];
-        Arrays.sort(points, pi+1, n, p.slopeOrder());
+        Point[] aux = new Point[n-pi-1];
+        for (int i = 0; i < n-pi-1; i++) aux[i] = points[pi+1+i];
+//        Arrays.sort(aux, new PointNaturalOrder());
+        Arrays.sort(aux, p.slopeOrder());
         int skipCount = 0;
-        for (int i = pi+1; i < n-1; i++) {
-            if (p.slopeOrder().compare(points[i], points[i+1]) == 0) {
-                skipCount = meetCondition(points, p, i);
+        for (int i = 0; i < n-pi-2; i++) {
+            if (p.slopeOrder().compare(aux[i], aux[i+1]) == 0) {
+                skipCount = meetCondition(aux, p, i);
                 if (skipCount > 0) i += skipCount - 1;
             }
         }

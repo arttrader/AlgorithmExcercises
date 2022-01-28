@@ -4,18 +4,17 @@
  *  Last modified:     2022-1-24
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
 public class FastCollinearPoints {
     private final Point[] points;
     private final int n;
-    private final ArrayList<LineSegmentPlus> segments;
-    private final boolean useDuplicateCheck = false;
+    private final BST<LineSegmentPlus, LineSegmentPlus> segments;
 
     public FastCollinearPoints(Point[] data) {
         // finds all line segments containing 4 points or more
@@ -30,24 +29,11 @@ public class FastCollinearPoints {
                     throw new IllegalArgumentException(data[i].toString());
             this.points[i] = data[i];
         }
- //       lineSegments = new ArrayList<LineSegment>();
-        segments = new ArrayList<LineSegmentPlus>();
+
+        segments = new BST<LineSegmentPlus, LineSegmentPlus>();
         Arrays.sort(this.points, new PointNaturalOrder());
         // findLineSegment(0);
        for (int i = 0; i < n-3; i++) findLineSegment(i);
-    }
-
-    private void removeDuplicates() {
-        if (segments.isEmpty()) return;
-        segments.sort(segments.get(0).slopeOrder());
-        LineSegmentPlus currentHigh = segments.get(0);
-        for (int i = 1; i < segments.size()-1; i++) {
-            int j = segments.size();
-            while (segments.get(--j).slope < currentHigh.slope) if (i >= j || segments.get(i).slope > currentHigh.slope) break;
-
-
-            currentHigh = segments.get(i+1);
-        }
     }
 
     private class PointNaturalOrder implements Comparator<Point> {
@@ -68,16 +54,13 @@ public class FastCollinearPoints {
         public int compareTo(LineSegmentPlus c) {
             int ds = Double.compare(slope, c.slope);
             if (ds != 0) return ds;
-            if (c.q.compareTo(q) == 0)
-                return c.q.compareTo(q);
-            else
-                return c.q.compareTo(q);
+            return q.compareTo(c.q);
         }
 
         public boolean collinear(LineSegmentPlus c) {
             int ds = Double.compare(slope, c.slope);
             if (ds != 0) return false;
-            return c.q.compareTo(q) == 0;
+            return this.compareTo(c) == 0;
         }
 
         public Comparator<LineSegmentPlus> slopeOrder() {
@@ -92,9 +75,9 @@ public class FastCollinearPoints {
     }
 
     private boolean containsSegment(LineSegmentPlus key) {
-        for (LineSegmentPlus c : segments)
-                if (key.collinear(c)) return true;
-        return false;
+        LineSegmentPlus seg = segments.get(key);
+        if (seg == null) return false;
+        else return seg.collinear(key);
     }
 
 
@@ -131,13 +114,8 @@ public class FastCollinearPoints {
         }
         if (es >= 3) {
             LineSegmentPlus cp = new LineSegmentPlus(minPoint, maxPoint, rsl);
-            if (useDuplicateCheck) {
-                 if (!containsSegment(cp)) {
-                    segments.add((cp));
-                    return es;
-                }
-            } else {
-                segments.add((cp));
+            if (!containsSegment(cp)) {
+                segments.put(cp, cp);
                 return es;
             }
         }
@@ -151,11 +129,10 @@ public class FastCollinearPoints {
 
     public LineSegment[] segments() {
         // the line segments
-        // removeDuplicates();
         final LineSegment[] segs = new LineSegment[segments.size()];
-        for (int i = 0; i < segments.size(); i++)
-            segs[i] = new LineSegment(segments.get(i).p, segments.get(i).q);
-//        lineSegments.toArray(segs);
+        int i = 0;
+        for (LineSegmentPlus s : segments.keys())
+            segs[i++] = new LineSegment(s.p, s.q);
         return segs;
     }
 

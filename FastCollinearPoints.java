@@ -15,7 +15,7 @@ import java.util.Comparator;
 public class FastCollinearPoints {
     private final Point[] points;
     private final int n;
-    private final BST<LineSegmentPlus, LineSegmentPlus> segments;
+    private final BST<LineSegmentKey, LineSegment> segments;
 
     public FastCollinearPoints(Point[] data) {
         // finds all line segments containing 4 points or more
@@ -31,66 +31,52 @@ public class FastCollinearPoints {
             points[i] = data[i];
         }
 
-        segments = new BST<LineSegmentPlus, LineSegmentPlus>();
-        Arrays.sort(this.points, new PointNaturalOrder());
-        // findLineSegment(0);
-       for (int i = 0; i < n-3; i++) findLineSegment(i);
+        segments = new BST<>();
+        Arrays.sort(points, new PointNaturalOrder());
+        for (int i = 0; i < n-3; i++) findLineSegment(i);
     }
 
     private class PointNaturalOrder implements Comparator<Point> {
         public int compare(Point o1, Point o2) { return o1.compareTo(o2); }
     }
     
-    private class LineSegmentPlus implements Comparable<LineSegmentPlus> {
-        private final Point p;
+    private class LineSegmentKey implements Comparable<LineSegmentKey> {
         private final Point q;
         private final double slope;
 
-        public LineSegmentPlus(Point min, Point max, double sl) {
-            p = min;
+        public LineSegmentKey(Point max, double sl) {
             q = max;
             slope = sl;
         }
 
-        public int compareTo(LineSegmentPlus c) {
+        public int compareTo(LineSegmentKey c) {
             int ds = Double.compare(slope, c.slope);
             if (ds != 0) return ds;
             return q.compareTo(c.q);
         }
 
-        public boolean collinear(LineSegmentPlus c) {
-            return this.compareTo(c) == 0;
+        public Comparator<LineSegmentKey> slopeOrder() {
+            return new LineSegmentKey.SlopeOrder();
         }
 
-        public Comparator<LineSegmentPlus> slopeOrder() {
-            return new LineSegmentPlus.SlopeOrder();
-        }
-
-        private class SlopeOrder implements Comparator<LineSegmentPlus> {
-            public int compare(LineSegmentPlus a, LineSegmentPlus b) {
+        private class SlopeOrder implements Comparator<LineSegmentKey> {
+            public int compare(LineSegmentKey a, LineSegmentKey b) {
                 return a.compareTo(b);
             }
         }
     }
-
-    private boolean containsSegment(LineSegmentPlus key) {
-        LineSegmentPlus seg = segments.get(key);
-        if (seg == null) return false;
-        else return seg.collinear(key);
-    }
-
 
     private void findLineSegment(int pi) {
         // sort for slope with respect to p
         // find a group of same slope, then check if it meets condition
         // repeat until the end
         Point p = points[pi];
-        Point[] aux = new Point[n-pi-1];
-        for (int i = 0; i < n-pi-1; i++) aux[i] = points[pi+1+i];
-//        Arrays.sort(aux, new PointNaturalOrder());
+        int an = n-pi-1;
+        Point[] aux = new Point[an];
+        for (int i = 0; i < an; i++) aux[i] = points[pi+1+i];
         Arrays.sort(aux, p.slopeOrder());
-        int skipCount = 0;
-        for (int i = 0; i < n-pi-2; i++) {
+        int skipCount;
+        for (int i = 0; i < an-1; i++) {
             if (p.slopeOrder().compare(aux[i], aux[i+1]) == 0) {
                 skipCount = meetCondition(aux, p, i);
                 if (skipCount > 0) i += skipCount - 1;
@@ -111,9 +97,10 @@ public class FastCollinearPoints {
             es++;
         }
         if (es >= 3) {
-            LineSegmentPlus cp = new LineSegmentPlus(minPoint, maxPoint, rsl);
-            if (!containsSegment(cp)) {
-                segments.put(cp, cp);
+            if (p.compareTo(minPoint) == 0) {
+                LineSegmentKey cp = new LineSegmentKey(maxPoint, rsl);
+                if (!segments.contains(cp))
+                    segments.put(cp, new LineSegment(p, maxPoint));
                 return es;
             }
         }
@@ -129,8 +116,8 @@ public class FastCollinearPoints {
         // the line segments
         final LineSegment[] segs = new LineSegment[segments.size()];
         int i = 0;
-        for (LineSegmentPlus s : segments.keys())
-            segs[i++] = new LineSegment(s.p, s.q);
+        for (LineSegmentKey s : segments.keys())
+            segs[i++] = segments.get(s);
         return segs;
     }
 

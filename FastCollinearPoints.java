@@ -7,6 +7,7 @@
 import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,14 +21,14 @@ public class FastCollinearPoints {
         // finds all line segments containing 4 points or more
         if (data == null) throw new IllegalArgumentException();
         n = data.length;
-        this.points = new Point[n];
+        points = new Point[n];
         for (int i = 0; i < n; i++)
             if (data[i] == null) throw new IllegalArgumentException();
         for (int i = 0; i < n; i++) {
             for (int j = i+1; j < n; j++)
                 if (data[i].compareTo(data[j]) == 0)
                     throw new IllegalArgumentException(data[i].toString());
-            this.points[i] = data[i];
+            points[i] = data[i];
         }
 
         segments = new BST<LineSegmentPlus, LineSegmentPlus>();
@@ -41,9 +42,9 @@ public class FastCollinearPoints {
     }
     
     private class LineSegmentPlus implements Comparable<LineSegmentPlus> {
-        final Point p;
-        final Point q;
-        final double slope;
+        private final Point p;
+        private final Point q;
+        private final double slope;
 
         public LineSegmentPlus(Point min, Point max, double sl) {
             p = min;
@@ -58,8 +59,6 @@ public class FastCollinearPoints {
         }
 
         public boolean collinear(LineSegmentPlus c) {
-            int ds = Double.compare(slope, c.slope);
-            if (ds != 0) return false;
             return this.compareTo(c) == 0;
         }
 
@@ -86,16 +85,12 @@ public class FastCollinearPoints {
         // find a group of same slope, then check if it meets condition
         // repeat until the end
         Point p = points[pi];
-        Point[] aux = new Point[n-pi-1];
-        for (int i = 0; i < n-pi-1; i++) aux[i] = points[pi+1+i];
-        Arrays.sort(aux, p.slopeOrder());
+        Arrays.sort(points, pi+1, n, p.slopeOrder());
         int skipCount = 0;
-        for (int i = 0; i < n-pi-2; i++) {
-            if (p.slopeOrder().compare(aux[i], aux[i+1]) == 0) {
-                skipCount = meetCondition(aux, p, i);
-                if (skipCount > 0) {
-                    i += skipCount - 1;
-                }
+        for (int i = pi+1; i < n-1; i++) {
+            if (p.slopeOrder().compare(points[i], points[i+1]) == 0) {
+                skipCount = meetCondition(points, p, i);
+                if (skipCount > 0) i += skipCount - 1;
             }
         }
     }
@@ -180,10 +175,21 @@ public class FastCollinearPoints {
         FastCollinearPoints bcp = new FastCollinearPoints(points);
         LineSegment[] segs = bcp.segments();
         StdOut.println(bcp.numberOfSegments());
-        for (LineSegment seg : segs) {
-            StdOut.println(seg.toString());
-            // seg.draw();
-            // StdDraw.show();
-        }
+        for (LineSegment seg : segs) StdOut.println(seg.toString());
+        // mutate points random
+         for (int j = 0; j < 10; j++) {
+             for (i = 0; i < n; i++) {
+                 int x = StdRandom.uniform(10000);
+                 int y = StdRandom.uniform(10000);
+                 points[i] = new Point(x, y);
+             }
+             segs = bcp.segments();
+         }
+         StdOut.println(bcp.numberOfSegments());
+         for (LineSegment seg : segs) {
+             StdOut.println(seg.toString());
+             // seg.draw();
+             // StdDraw.show();
+         }
     }
 }

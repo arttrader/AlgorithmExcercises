@@ -138,8 +138,7 @@ public class FastCollinearPointsWExtraList {
         int es = 0;
         for (int i = si; i < n; i++) {
             sl = p.slopeTo(aux[i]);
-            if (Double.compare(rsl, sl) != 0)
-                return checkCountAndRegister(es, minPoint, maxPoint, rsl);
+            if (Double.compare(rsl, sl) != 0) break;
             if (aux[i].compareTo(minPoint) < 0) minPoint = aux[i];
             if (aux[i].compareTo(maxPoint) > 0) maxPoint = aux[i];
             es++;

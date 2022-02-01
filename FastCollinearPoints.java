@@ -33,10 +33,8 @@ public class FastCollinearPoints {
 
         segments = new ArrayList<LineSegment>();
         Arrays.sort(points, new Comparator<Point>() {
-            public int compare(Point o1, Point o2) {
-                return o1.compareTo(o2);
-            }
-        });
+            public int compare(Point o1, Point o2) { return o1.compareTo(o2); }
+        }); // natural order sort before sort by slope
         for (int i = 0; i < n-3; i++) findLineSegment(i);
     }
 
@@ -70,9 +68,8 @@ public class FastCollinearPoints {
             es++;
         }
         if (es >= 3) {
-            if (p.compareTo(minPoint) == 0) {
+            if (p.compareTo(minPoint) == 0)
                 segments.add(new LineSegment(p, maxPoint));
-            }
             return es;
         }
         return 0;

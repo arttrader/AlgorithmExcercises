@@ -4,8 +4,12 @@
  *  Last modified:     2022-2-1
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.MaxPQ;
+import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
+
+import java.util.Iterator;
 
 public class DynamicMedian<Key extends Comparable<Key>> {
     private final int N;
@@ -25,12 +29,12 @@ public class DynamicMedian<Key extends Comparable<Key>> {
             minPq.insert(x);
         else
             maxPq.insert(x);
-        
-        if (less(minPq.peek(), maxPq.peek())) { // swap
-            Key key = maxPq.delMax();
-            maxPq.insert(minPq.delMin());
-            minPq.insert(key);
-        }
+        if (minPq.size() > 0 && maxPq.size() > 0)
+            if (less(minPq.min(), maxPq.max())) { // swap
+                Key key = maxPq.delMax();
+                maxPq.insert(minPq.delMin());
+                minPq.insert(key);
+            }
     }
 
     private boolean less(Key a, Key b) {
@@ -39,9 +43,9 @@ public class DynamicMedian<Key extends Comparable<Key>> {
 
     public Key findMedian() {
         if (minPq.size() > maxPq.size())
-            return minPq.peek();
+            return minPq.min();
         else
-            return maxPq.peek();
+            return maxPq.max();
     }
 
     public Key delMedian() {
@@ -52,8 +56,16 @@ public class DynamicMedian<Key extends Comparable<Key>> {
     }
 
     private void print() {
-        minPq.print();
-        maxPq.print();
+        Iterator<Key> minIt = minPq.iterator();
+        int i = 0;
+        while (minIt.hasNext()) {
+            StdOut.printf("%s  %s \n", i++, minIt.next());
+        }
+        Iterator<Key> maxIt = maxPq.iterator();
+        i = 0;
+        while (minIt.hasNext()) {
+            StdOut.printf("%s  %s \n", i++, maxIt.next());
+        }
     }
 
 

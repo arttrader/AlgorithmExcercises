@@ -5,20 +5,17 @@
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
-
-import java.util.ArrayList;
 
 public class Board {
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     private final int[][] tiles;
     private final int n;
-    private ArrayList<Board> moves;
+    private Stack<Board> moves;
     private Board twin;
-    private int zx = 0;
-    private int zy = 0;
 
     public Board(int[][] tiles) {
         n = tiles.length;
@@ -27,7 +24,6 @@ public class Board {
             for (int j = 0; j < n; j++) {
                 this.tiles[i][j] = tiles[i][j];
             }
-        locateBlank();
     }
 
     // string representation of this board
@@ -36,8 +32,7 @@ public class Board {
         StringBuilder sb = new StringBuilder(s);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                sb.append(" ");
-                sb.append(tiles[i][j]);
+                sb.append(String.format("%2d ", tiles[i][j]));
              }
             sb.append("\n");
         }
@@ -78,6 +73,7 @@ public class Board {
     // does this board equal y?
     public boolean equals(Object y) {
         if (y == null) return false;
+        if (y == this) return true;
         if (!y.getClass().equals(this.getClass())) return false;
         if (((Board) y).dimension() != dimension()) return false;
         return y.toString().equals(this.toString());
@@ -85,23 +81,15 @@ public class Board {
 
     private void createMoves() {
         // make a list of neighbor boards
-        moves = new ArrayList<>();
-        if (zx > 0) {
-            Board board1 = copy();
-            if (board1.moveTo(0, -1)) moves.add(board1);
-        }
-        if (zx < n-1) {
-            Board board2 = copy();
-            if (board2.moveTo(0, 1)) moves.add(board2);
-        }
-        if (zy > 0) {
-            Board board3 = copy();
-            if (board3.moveTo(-1, 0)) moves.add(board3);
-        }
-        if (zy < n-1) {
-            Board baord4 = copy();
-            if (baord4.moveTo(1, 0)) moves.add(baord4);
-        }
+        moves = new Stack<>();
+        Board board1 = copy();
+        if (board1.moveTo(0, -1)) moves.push(board1);
+        Board board2 = copy();
+        if (board2.moveTo(0, 1)) moves.push(board2);
+        Board board3 = copy();
+        if (board3.moveTo(-1, 0)) moves.push(board3);
+        Board baord4 = copy();
+        if (baord4.moveTo(1, 0)) moves.push(baord4);
     }
 
 
@@ -111,7 +99,10 @@ public class Board {
         return moves;
     }
 
-    private void locateBlank() {
+    private boolean moveTo(int dy, int dx) {
+        if (dx != 0 && dy != 0) return false; // can only move up down left right
+        int zx = 0;
+        int zy = 0;
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
                 if (tiles[i][j] == 0) {
@@ -119,17 +110,11 @@ public class Board {
                     zy = i;
                     break;
                 }
-    }
-
-    private boolean moveTo(int dy, int dx) {
-         if (dx != 0) {
+        if (dx != 0 && zx + dx >= 0 && zx + dx < n) {
             swap(zy, zx, zy, zx + dx);
-            zx += dx;
             return true;
-        }
-        if (dy != 0) {
+        } else if (dy != 0 && zy + dy >= 0 && zy + dy < n) {
             swap(zy, zx, zy + dy, zx);
-            zy += dy;
             return true;
         }
         return false;

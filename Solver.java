@@ -46,20 +46,34 @@ public class Solver {
 
     private Iterable<Board> aStar(Board start) {
         int sManhattan = start.manhattan();
-        MinPQ<Node> gameTree = new MinPQ<>(sManhattan);
+        MinPQ<Node> gt = new MinPQ<>(sManhattan);
         Node currentNode = new Node(start, 0, sManhattan, null);
+        Board twin = start.twin();
+        int tManhattan = twin.manhattan();
+        MinPQ<Node> tGt = new MinPQ<>(tManhattan);
+        Node tCurrentNode = new Node(twin, 0, tManhattan, null);
+        // int count = 0;
         do {
-            StdOut.println(currentNode.board().toString());
+            // StdOut.println(currentNode.board().toString());
             if (currentNode.board().isGoal()) {
                 minMoves = currentNode.steps;
                 return reconstructPath(currentNode);
             }
             for (Board nb : currentNode.board().neighbors()) {
                 if (currentNode.prev() == null || !currentNode.prev().board().equals(nb))
-                    gameTree.insert(new Node(nb, currentNode.steps + 1, nb.manhattan(), currentNode));
+                    gt.insert(
+                            new Node(nb, currentNode.steps + 1, nb.manhattan(), currentNode));
             }
-            currentNode = gameTree.delMin();
-        } while (!gameTree.isEmpty());
+            currentNode = gt.delMin();
+            if (tCurrentNode.board().isGoal()) return null; // not solvable
+            for (Board nb : tCurrentNode.board().neighbors()) {
+                if (tCurrentNode.prev() == null || !tCurrentNode.prev().board().equals(nb))
+                    tGt.insert(
+                            new Node(nb, tCurrentNode.steps + 1, nb.manhattan(), tCurrentNode));
+            }
+            tCurrentNode = tGt.delMin();
+            // StdOut.printf("count %s\n", count++);
+        } while (!gt.isEmpty());
         return null;
     }
 

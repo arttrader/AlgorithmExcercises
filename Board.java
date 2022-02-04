@@ -79,6 +79,21 @@ public class Board {
         return y.toString().equals(this.toString());
     }
 
+    // all neighboring boards
+    public Iterable<Board> neighbors() {
+        createMoves();
+        return moves;
+    }
+
+    // a board that is obtained by exchanging any pair of tiles
+    public Board twin() {
+        if (twin == null) {
+            twin = copy();
+            twin.rndSwap();
+        }
+        return twin;
+    }
+
     private void createMoves() {
         // make a list of neighbor boards
         moves = new Stack<>();
@@ -90,13 +105,6 @@ public class Board {
         if (board3.moveTo(-1, 0)) moves.push(board3);
         Board baord4 = copy();
         if (baord4.moveTo(1, 0)) moves.push(baord4);
-    }
-
-
-    // all neighboring boards
-    public Iterable<Board> neighbors() {
-        createMoves();
-        return moves;
     }
 
     private boolean moveTo(int dy, int dx) {
@@ -131,7 +139,7 @@ public class Board {
     }
 
     private void rndSwap() {
-        // this is only for twin
+        // this is only for a twin
         int y0;
         int x0;
         int y1;
@@ -145,15 +153,6 @@ public class Board {
             x1 = StdRandom.uniform(n);
         } while ((y1 == y0 && x1 == x0) || tiles[y1][x1] == 0);
         swap(y0, x0, y1, x1);
-    }
-
-    // a board that is obtained by exchanging any pair of tiles
-    public Board twin() {
-        if (twin == null) {
-            twin = copy();
-            twin.rndSwap();
-        }
-        return twin;
     }
 
 

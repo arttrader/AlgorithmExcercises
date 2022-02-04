@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class Solver {
     private final Iterable<Board> solution;
-    private int minMoves = -1; // default must be unsolvable
+    private int minMoves = -1; // default must be set to unsolvable
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -52,9 +52,7 @@ public class Solver {
         int tManhattan = twin.manhattan();
         MinPQ<Node> tGt = new MinPQ<>(tManhattan);
         Node tCurrentNode = new Node(twin, 0, tManhattan, null);
-        // int count = 0;
         do {
-            // StdOut.println(currentNode.board().toString());
             if (currentNode.board().isGoal()) {
                 minMoves = currentNode.steps;
                 return reconstructPath(currentNode);
@@ -72,7 +70,6 @@ public class Solver {
                             new Node(nb, tCurrentNode.steps + 1, nb.manhattan(), tCurrentNode));
             }
             tCurrentNode = tGt.delMin();
-            // StdOut.printf("count %s\n", count++);
         } while (!gt.isEmpty());
         return null;
     }
@@ -86,15 +83,6 @@ public class Solver {
         }
         return totalPath;
     }
-
-/*    private Board getGoal(int n) {
-        int[][] t = new int[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                t[i][j] = i*n + j + 1;
-        t[n-1][n-1] = 0; // last one should be blank
-        return new Board(t);
-    }*/
 
     // is the initial board solvable? (see below)
     public boolean isSolvable() {

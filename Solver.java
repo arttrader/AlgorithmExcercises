@@ -48,8 +48,8 @@ public class Solver {
         int sManhattan = start.manhattan();
         MinPQ<Node> gameTree = new MinPQ<>(sManhattan);
         Node currentNode = new Node(start, 0, sManhattan, null);
-//        gameTree.insert(currentNode);
         do {
+            StdOut.println(currentNode.board().toString());
             if (currentNode.board().isGoal()) {
                 minMoves = currentNode.steps;
                 return reconstructPath(currentNode);
@@ -59,7 +59,6 @@ public class Solver {
                     gameTree.insert(new Node(nb, currentNode.steps + 1, nb.manhattan(), currentNode));
             }
             currentNode = gameTree.delMin();
-//            StdOut.println(currentNode.board().toString());
         } while (!gameTree.isEmpty());
         return null;
     }

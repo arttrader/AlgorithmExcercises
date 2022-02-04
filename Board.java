@@ -17,6 +17,8 @@ public class Board {
     private final int n;
     private ArrayList<Board> moves;
     private Board twin;
+    private int zx = 0;
+    private int zy = 0;
 
     public Board(int[][] tiles) {
         n = tiles.length;
@@ -25,6 +27,7 @@ public class Board {
             for (int j = 0; j < n; j++) {
                 this.tiles[i][j] = tiles[i][j];
             }
+        locateBlank();
     }
 
     // string representation of this board
@@ -83,14 +86,22 @@ public class Board {
     private void createMoves() {
         // make a list of neighbor boards
         moves = new ArrayList<>();
-        Board board1 = copy();
-        if (board1.moveTo(0, -1))  moves.add(board1);
-        Board board2 = copy();
-        if (board2.moveTo(0, 1)) moves.add(board2);
-        Board board3 = copy();
-        if (board3.moveTo(-1, 0)) moves.add(board3);
-        Board baord4 = copy();
-        if (baord4.moveTo(1, 0)) moves.add(baord4);
+        if (zx > 0) {
+            Board board1 = copy();
+            if (board1.moveTo(0, -1)) moves.add(board1);
+        }
+        if (zx < n-1) {
+            Board board2 = copy();
+            if (board2.moveTo(0, 1)) moves.add(board2);
+        }
+        if (zy > 0) {
+            Board board3 = copy();
+            if (board3.moveTo(-1, 0)) moves.add(board3);
+        }
+        if (zy < n-1) {
+            Board baord4 = copy();
+            if (baord4.moveTo(1, 0)) moves.add(baord4);
+        }
     }
 
 
@@ -100,10 +111,7 @@ public class Board {
         return moves;
     }
 
-    private boolean moveTo(int dy, int dx) {
-        if (dx != 0 && dy != 0) return false; // can only move up down left right
-        int zx = 0;
-        int zy = 0;
+    private void locateBlank() {
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
                 if (tiles[i][j] == 0) {
@@ -111,11 +119,17 @@ public class Board {
                     zy = i;
                     break;
                 }
-        if (dx != 0 && zx + dx >= 0 && zx + dx < n) {
+    }
+
+    private boolean moveTo(int dy, int dx) {
+         if (dx != 0) {
             swap(zy, zx, zy, zx + dx);
+            zx += dx;
             return true;
-        } else if (dy != 0 && zy + dy >= 0 && zy + dy < n) {
+        }
+        if (dy != 0) {
             swap(zy, zx, zy + dy, zx);
+            zy += dy;
             return true;
         }
         return false;

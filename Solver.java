@@ -11,54 +11,56 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.ArrayList;
 
 public class Solver {
-    private final MinPQ<Node> gameTree;
     private final Iterable<Board> solution;
+    private int minMoves = -1; // default must be unsolvable
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
         if (initial == null) throw new IllegalArgumentException();
-        gameTree = new MinPQ<>();
-        Board goal = getGoal(initial.dimension());
-        solution = aStar(initial, goal);
+        solution = aStar(initial);
     }
 
     private class Node implements Comparable<Node> {
-        private Board b;
-        private int moves;
-        private int manhattan;
-        private Node cameFrom;
+        private final Board b;
+        private final int steps;
+        private final int manhattan;
+        private final Node cameFrom;
 
         public Node(Board board, int moves, int manhattan, Node from) {
             b = board;
-            this.moves = moves;
+            this.steps = moves;
             this.manhattan = manhattan;
             cameFrom = from;
         }
 
         public int compareTo(Node n) {
-            return this.manhattan - n.manhattan;
+            return this.priority() - n.priority();
         }
 
         public Node prev() { return cameFrom; }
 
         public Board board() { return b; }
+
+        public int priority() { return manhattan + steps; }
     }
 
-    private Iterable<Board> aStar(Board start, Board goal) {
-        Node currentNode = new Node(start, 0, start.manhattan(), null);
-        gameTree.insert(currentNode);
-        while (!gameTree.isEmpty()) {
-            if (currentNode.board().equals(goal))
+    private Iterable<Board> aStar(Board start) {
+        int sManhattan = start.manhattan();
+        MinPQ<Node> gameTree = new MinPQ<>(sManhattan);
+        Node currentNode = new Node(start, 0, sManhattan, null);
+//        gameTree.insert(currentNode);
+        do {
+            if (currentNode.board().isGoal()) {
+                minMoves = currentNode.steps;
                 return reconstructPath(currentNode);
-            Iterable<Board> it = next(currentNode);
-            for (Board b : it) {
-                int cManhattan = b.manhattan();
-                if (currentNode.prev() == null || !currentNode.prev().board().equals(b))
-                    gameTree.insert(new Node(b, currentNode.moves + 1, cManhattan, currentNode));
+            }
+            for (Board nb : currentNode.board().neighbors()) {
+                if (currentNode.prev() == null || !currentNode.prev().board().equals(nb))
+                    gameTree.insert(new Node(nb, currentNode.steps + 1, nb.manhattan(), currentNode));
             }
             currentNode = gameTree.delMin();
 //            StdOut.println(currentNode.board().toString());
-        }
+        } while (!gameTree.isEmpty());
         return null;
     }
 
@@ -72,18 +74,14 @@ public class Solver {
         return totalPath;
     }
 
-    private Iterable<Board> next(Node n) {
-        return n.board().neighbors();
-    }
-
-    private Board getGoal(int n) {
+/*    private Board getGoal(int n) {
         int[][] t = new int[n][n];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
                 t[i][j] = i*n + j + 1;
         t[n-1][n-1] = 0; // last one should be blank
         return new Board(t);
-    }
+    }*/
 
     // is the initial board solvable? (see below)
     public boolean isSolvable() {
@@ -92,10 +90,7 @@ public class Solver {
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        int m = 0;
-        for (Board b : solution) m++;
-        if (m > 0) m--;
-        return m;
+        return minMoves;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable

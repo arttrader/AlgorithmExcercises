@@ -6,6 +6,7 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.ArrayList;
 
@@ -14,25 +15,30 @@ public class Board {
     // where tiles[row][col] = tile at (row, col)
     private final int[][] tiles;
     private final int n;
-    private ArrayList<Board> moves = new ArrayList<>();
+    private ArrayList<Board> moves;
+    private Board twin;
 
     public Board(int[][] tiles) {
         n = tiles.length;
         this.tiles = new int[n][n];
         for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < n; j++) {
                 this.tiles[i][j] = tiles[i][j];
+            }
     }
 
     // string representation of this board
     public String toString() {
         String s = String.format("%s\n", n);
+        StringBuilder sb = new StringBuilder(s);
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++)
-                s += " " + tiles[i][j];
-            s += "\n";
+            for (int j = 0; j < n; j++) {
+                sb.append(" ");
+                sb.append(tiles[i][j]);
+             }
+            sb.append("\n");
         }
-        return s;
+        return sb.toString();
     }
 
     // board dimension n
@@ -74,21 +80,24 @@ public class Board {
         return y.toString().equals(this.toString());
     }
 
+    private void createMoves() {
+        // make a list of neighbor boards
+        moves = new ArrayList<>();
+        Board board1 = copy();
+        if (board1.moveTo(0, -1))  moves.add(board1);
+        Board board2 = copy();
+        if (board2.moveTo(0, 1)) moves.add(board2);
+        Board board3 = copy();
+        if (board3.moveTo(-1, 0)) moves.add(board3);
+        Board baord4 = copy();
+        if (baord4.moveTo(1, 0)) moves.add(baord4);
+    }
+
+
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return () -> {
-            moves.clear();
-            // make a list of boards
-            Board board1 = copy();
-            if (board1.moveTo(0, -1)) moves.add(board1);
-            Board board2 = copy();
-            if (board2.moveTo(0, 1)) moves.add(board2);
-            Board board3 = copy();
-            if (board3.moveTo(-1, 0)) moves.add(board3);
-            Board baord4 = copy();
-            if (baord4.moveTo(1, 0)) moves.add(baord4);
-            return moves.iterator();
-        };
+        createMoves();
+        return moves;
     }
 
     private boolean moveTo(int dy, int dx) {
@@ -119,14 +128,33 @@ public class Board {
     }
 
     private Board copy() {
-        Board board = new Board(this.tiles);
-        return board;
+        return new Board(tiles);
+    }
+
+    private void rndSwap() {
+        // this is only for twin
+        int y0;
+        int x0;
+        int y1;
+        int x1;
+        do {
+            y0 = StdRandom.uniform(n);
+            x0 = StdRandom.uniform(n);
+        } while (tiles[y0][x0] == 0);
+        do {
+            y1 = StdRandom.uniform(n);
+            x1 = StdRandom.uniform(n);
+        } while ((y1 == y0 && x1 == x0) || tiles[y1][x1] == 0);
+        swap(y0, x0, y1, x1);
     }
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        Board board = copy();
-        return board;
+        if (twin == null) {
+            twin = copy();
+            twin.rndSwap();
+        }
+        return twin;
     }
 
 
@@ -140,6 +168,8 @@ public class Board {
                 tiles[i][j] = in.readInt();
         Board b = new Board(tiles);
         assert b.twin().equals(b.twin());
+        StdOut.println("twin");
+        StdOut.println(b.twin().toString());
         // StdOut.println(b.toString());
         // b.moveTo(1, 0);
         // StdOut.println(b.toString());

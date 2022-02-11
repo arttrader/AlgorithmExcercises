@@ -35,6 +35,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         x.left = h;
         x.color = h.color;
         h.color = RED;
+        h.size = size(h.left) + size(h.right) + 1;
+        x.size = h.size + size(x.right) + 1;
         return x;
     }
 
@@ -45,6 +47,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         x.right = h;
         x.color = h.color;
         h.color = RED;
+        h.size = size(h.left) + size(h.right) + 1;
+        x.size = size(x.left) + h.size + 1;
         return x;
     }
 
@@ -65,7 +69,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         if      (cmp < 0) x.left  = put(x.left,  key, val);
         else if (cmp > 0) x.right = put(x.right, key, val);
         else              x.val   = val;
-        x.size = 1 + size(x.left) + size(x.right);
+        x.size = size(x.left) + size(x.right) + 1;
 
         if (!isRed(x.left) && isRed(x.right)) x = rotateLeft(x);
         if (isRed(x.left) && isRed(x.left.left)) x = rotateRight(x);
@@ -98,6 +102,11 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         if (cmplo < 0) keys(x.left, queue, lo, hi);
         if (cmplo <= 0 && cmphi >= 0) queue.enqueue(x.key);
         if (cmphi > 0) keys(x.right, queue, lo, hi);
+    }
+
+    public boolean contains(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to contains() is null");
+        return get(key) != null;
     }
 
     public Value get(Key key) {
@@ -143,6 +152,20 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         return max(n.right);
     }
 
+    public int rank(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to rank() is null");
+        return rank(key, root);
+    }
+
+    // Number of keys in the subtree less than key.
+    private int rank(Key key, Node x) {
+        if (x == null) return 0;
+        int cmp = key.compareTo(x.key);
+        if      (cmp < 0) return rank(key, x.left);
+        else if (cmp > 0) return 1 + size(x.left) + rank(key, x.right);
+        else              return size(x.left);
+    }
+
     public Iterable<Key> keys() {
         if (isEmpty()) return new Queue<Key>();
         return keys(min(), max());
@@ -177,6 +200,15 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         return keys;
     }
 
+    public Iterable<Key> rangeSearch(Key lo, Key hi) {
+        return keys(lo, hi);
+    }
+
+    public int rangeCount(Key lo, Key hi) {
+        if (contains(hi)) return rank(hi) - rank(lo) + 1;
+        else return rank(hi) - rank(lo);
+    }
+
     public boolean isBST() {
         return isBST(root, min(), max());
     }
@@ -195,20 +227,29 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     public static void main(String[] args) {
-        RedBlackBST<String, Integer> st = new RedBlackBST<>();
+        RedBlackBST<Integer, Integer> st = new RedBlackBST<>();
+        int n = 0;
         for (int i = 0; !StdIn.isEmpty(); i++) {
-            String key = StdIn.readString();
+            Integer key = Integer.parseInt(StdIn.readString());
             st.put(key, i);
+            n++;
         }
 
-        for (String s : st.levelOrder())
+        for (Integer s : st.levelOrder())
             StdOut.println(s + " " + st.get(s));
 
         StdOut.println();
 
-        for (String s : st.keys())
-            StdOut.println(s + " " + st.get(s));
+        for (Integer s : st.keys())
+            StdOut.println(s + " " + st.get(s) + " " + st.rank(s));
 
-        StdOut.println(st.isBST());
+       // StdOut.println(st.isBST());
+        Integer lo = 3000;
+        Integer hi = 5000;
+        StdOut.printf("lo %s  rank %s\n", lo, st.rank(lo));
+        StdOut.printf("lo %s  rank %s\n", hi, st.rank(hi));
+        StdOut.printf("range Count: %s\n", st.rangeCount(lo, hi));
+        for (Integer s : st.rangeSearch(lo, hi))
+            StdOut.println(s + " " + st.get(s));
     }
 }

@@ -31,8 +31,8 @@ public class KdTree {
         int cmp;
         if (x.vertical) cmp = p.X_ORDER.compare(p, x.key);
         else cmp = p.Y_ORDER.compare(p, x.key);
-        if (cmp < 0) put(x.left, p, !vert);
-        else put(x.right, p, !vert);
+        if (cmp < 0) x.left = put(x.left, p, !vert);
+        else x.right = put(x.right, p, !vert);
         return x;
     }
 
@@ -73,12 +73,13 @@ public class KdTree {
         if (x == null) return;
         StdDraw.setPenColor();
         x.key.draw();
+        StdDraw.setPenRadius(0.001);
         if (x.vertical) {
             StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.line(x.key.x(), 0, x.key.x(), 1);
+            StdDraw.line(x.key.x(), 0.0, x.key.x(), 1.0);
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.line(0, x.key.y(), 1, x.key.x());
+            StdDraw.line(0.0, x.key.y(), 1.0, x.key.y());
         }
         StdDraw.show();
         draw(x.left);
@@ -122,7 +123,7 @@ public class KdTree {
         }
 
         double scale = 1.0;
-        StdDraw.setCanvasSize(800, 800);
+        StdDraw.setCanvasSize(600, 600);
         StdDraw.setXscale(0, scale);
         StdDraw.setYscale(0, scale);
         //        StdDraw.setPenColor(StdDraw.RED);

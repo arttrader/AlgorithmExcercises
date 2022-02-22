@@ -8,7 +8,7 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
-public class RedBlackBST<Key extends Comparable<Key>, Value> {
+public class RBBST<Key extends Comparable<Key>, Value> {
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
     private Node root;
@@ -227,7 +227,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     public static void main(String[] args) {
-        RedBlackBST<Integer, Integer> st = new RedBlackBST<>();
+        RBBST<Integer, Integer> st = new RBBST<>();
         int n = 0;
         for (int i = 0; !StdIn.isEmpty(); i++) {
             Integer key = Integer.parseInt(StdIn.readString());

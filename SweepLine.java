@@ -6,7 +6,7 @@
 
 public class SweepLine {
     final int UPPER_LIMIT = 20;
-    RedBlackBST<Integer, Integer> bst;
+    RBBST<Integer, Integer> bst;
 
 
     public class HSegment implements Comparable<HSegment> {
@@ -30,8 +30,8 @@ public class SweepLine {
     }
 
 
-    public SweepLine(RedBlackBST<Integer, HSegment> hseg, int n) {
-        bst = new RedBlackBST<>();
+    public SweepLine(RBBST<Integer, HSegment> hseg, int n) {
+        bst = new RBBST<>();
         for (int x = 0; x < UPPER_LIMIT; x++) {
 
         }

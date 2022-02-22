@@ -29,11 +29,35 @@ public class KdTree {
     private Node put(Node x, Point2D p, boolean vert) {
         if (x == null) return new Node(p, vert);
         int cmp;
-        if (x.vertical) cmp = p.X_ORDER.compare(p, x.key);
-        else cmp = p.Y_ORDER.compare(p, x.key);
+        if (x.vertical) cmp = Point2D.X_ORDER.compare(p, x.key);
+        else cmp = Point2D.Y_ORDER.compare(p, x.key);
         if (cmp < 0) x.left = put(x.left, p, !vert);
         else x.right = put(x.right, p, !vert);
         return x;
+    }
+
+    public boolean isEmpty() {
+        return (root == null);
+    }
+
+    private boolean contains(Point2D p, Node x) {
+        if (p.compareTo(x.key) == 0) return true;
+        if (x.vertical)
+            if (x.key.x() > p.x())
+                return contains(p, x.left);
+            else
+                return contains(p, x.right);
+        else
+            if (x.key.y() > p.y())
+                return contains(p, x.left);
+            else
+                return contains(p, x.right);
+    }
+
+    public boolean contains(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
+        if (isEmpty()) return false;
+        else return contains(p, root);
     }
 
     public void insert(Point2D p) {
@@ -59,10 +83,10 @@ public class KdTree {
         return r;
     }
 
-    public Point2D[] range(RectHV rect) {
+    public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) throw new IllegalArgumentException();
-        Object[] r = range(rect, root).toArray();
-        return (Point2D[]) r;
+        ArrayList<Point2D> r = range(rect, root);
+        return r;
     }
 
     public void draw() {

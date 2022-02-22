@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class
 PointSET {
-    TreeSet<Point2D> set;
+    private TreeSet<Point2D> set;
     // construct an empty set of points
     public PointSET() {
         set = new TreeSet<>();
@@ -80,7 +80,7 @@ PointSET {
         for (Point2D p : set.set) StdOut.println(p.toString());
 
         double scale = 1.0;
-        StdDraw.setCanvasSize(800, 800);
+        StdDraw.setCanvasSize(600, 600);
         StdDraw.setXscale(0, scale);
         StdDraw.setYscale(0, scale);
         //        StdDraw.setPenColor(StdDraw.RED);

@@ -10,8 +10,8 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public class
 PointSET {
@@ -30,11 +30,12 @@ PointSET {
     // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
         if (p == null) throw new IllegalArgumentException();
-        if (!set.contains(p)) set.add(p);
+        set.add(p);
     }
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
         return set.contains(p);
     }
 
@@ -48,7 +49,10 @@ PointSET {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
-        return set.stream().filter(p -> rect.contains(p)).collect(Collectors.toSet());
+        ArrayList<Point2D> a = new ArrayList<>();
+        for (Point2D p : set)
+            if (rect.contains(p)) a.add(p);
+        return a;
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty

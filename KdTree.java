@@ -47,7 +47,7 @@ public class KdTree {
         if (x.vertical) cmp = Point2D.X_ORDER.compare(p, x.key);
         else cmp = Point2D.Y_ORDER.compare(p, x.key);
         if (cmp < 0) x.left = put(x.left, p, !vert);
-        else x.right = put(x.right, p, !vert);
+        else         x.right = put(x.right, p, !vert);
         x.size = 1 + size(x.left) + size(x.right);
         return x;
     }
@@ -58,6 +58,7 @@ public class KdTree {
     }
 
     private boolean contains(Point2D p, Node x) {
+        if (x == null) return false;
         if (p.compareTo(x.key) == 0) return true;
         if (x.vertical)
             if (x.key.x() > p.x())
@@ -73,7 +74,6 @@ public class KdTree {
 
     public boolean contains(Point2D p) {
         if (p == null) throw new IllegalArgumentException();
-        if (isEmpty()) return false;
         else return contains(p, root);
     }
 

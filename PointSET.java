@@ -57,6 +57,7 @@ PointSET {
 
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
         Point2D nearest = null;
         double shortest = Double.POSITIVE_INFINITY;
         for (Point2D ep : set) {

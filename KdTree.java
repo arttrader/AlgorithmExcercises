@@ -82,12 +82,12 @@ public class KdTree {
         if (x == null) return r;
         if (rect.contains(x.key)) r.add(x.key);
         if (x.vertical)
-            if (x.key.x() > rect.xmax())
+            if (rect.xmax() < x.key.x())
                 r.addAll(range(rect, x.left));
             else
                 r.addAll(range(rect, x.right));
         else
-            if (x.key.y() > rect.ymax())
+            if (rect.ymax() < x.key.y())
                 r.addAll(range(rect, x.left));
             else
                 r.addAll(range(rect, x.right));
@@ -126,12 +126,12 @@ public class KdTree {
         if (query.distanceSquaredTo(x.key) < query.distanceSquaredTo(nearest))
             nearest = x.key;
         if (x.vertical)
-            if (x.key.x() > query.x())
+            if (query.x() < x.key.x())
                 nearest = nearest(query, x.left, nearest);
             else
                 nearest = nearest(query, x.right, nearest);
         else
-            if (x.key.y() > query.y())
+            if (query.y() < x.key.y())
                 nearest = nearest(query, x.left, nearest);
             else
                 nearest = nearest(query, x.right, nearest);

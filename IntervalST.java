@@ -12,11 +12,11 @@ public class IntervalST<Value> {
     private Node root;
 
     private class Node {
-        Interval key;
-        int rMax;
-        Value val;
-        Node left, right;
-        boolean color;
+        private Interval key;
+        private int rMax;
+        private Value val;
+        private Node left, right;
+        private boolean color;
 
         public Node(int lo, int hi, Value val, boolean c) {
             key = new Interval(lo, hi);
@@ -232,6 +232,7 @@ public class IntervalST<Value> {
 
     public static void main(String[] args) {
         IntervalST<Integer> ist = new IntervalST<>();
+        ist.put(5, 10, 1);
 
     }
 }

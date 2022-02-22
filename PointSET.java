@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class
 PointSET {
-    private TreeSet<Point2D> set;
+    private final TreeSet<Point2D> set;
     // construct an empty set of points
     public PointSET() {
         set = new TreeSet<>();
@@ -56,7 +56,7 @@ PointSET {
         Point2D nearest = null;
         double shortest = Double.POSITIVE_INFINITY;
         for (Point2D ep : set) {
-            Double dist = p.distanceTo(ep);
+            double dist = p.distanceSquaredTo(ep);
             if (dist < shortest) {
                 nearest = ep;
                 shortest = dist;
@@ -68,22 +68,18 @@ PointSET {
 
     public static void main(String[] args) {
         PointSET set = new PointSET();
-        int n = 0;
-        for (int i = 0; !StdIn.isEmpty(); i++) {
-            Double x = Double.parseDouble(StdIn.readString());
-            Double y = Double.parseDouble(StdIn.readString());
+        while (!StdIn.isEmpty()) {
+            double x = Double.parseDouble(StdIn.readString());
+            double y = Double.parseDouble(StdIn.readString());
             Point2D p = new Point2D(x, y);
             set.insert(p);
-            n++;
         }
-
         for (Point2D p : set.set) StdOut.println(p.toString());
 
         double scale = 1.0;
         StdDraw.setCanvasSize(600, 600);
         StdDraw.setXscale(0, scale);
         StdDraw.setYscale(0, scale);
-        //        StdDraw.setPenColor(StdDraw.RED);
         StdDraw.setPenRadius(0.01);
         StdDraw.enableDoubleBuffering();
         set.draw();

@@ -16,15 +16,15 @@ public class KdTree {
     private Node root;
 
     private class Node {
-        private Point2D key;
+        private final Point2D key;
         private Node left, right;
-        private boolean vertical;
+        private final boolean vertical;
         private int size;
 
         public Node(Point2D key, boolean vert) {
             this.key = key;
             this.vertical = vert;
-            size = 0;
+            size = 1;
         }
     }
 
@@ -41,26 +41,6 @@ public class KdTree {
         return x.size;
     }
 
-    private boolean contains(Point2D p, Node x) {
-        if (p.compareTo(x.key) == 0) return true;
-        if (x.vertical)
-            if (x.key.x() > p.x())
-                return contains(p, x.left);
-            else
-                return contains(p, x.right);
-        else
-            if (x.key.y() > p.y())
-                return contains(p, x.left);
-            else
-                return contains(p, x.right);
-    }
-
-    public boolean contains(Point2D p) {
-        if (p == null) throw new IllegalArgumentException();
-        if (isEmpty()) return false;
-        else return contains(p, root);
-    }
-
     private Node put(Node x, Point2D p, boolean vert) {
         if (x == null) return new Node(p, vert);
         int cmp;
@@ -75,6 +55,26 @@ public class KdTree {
     public void insert(Point2D p) {
         if (p == null) throw new IllegalArgumentException();
         root = put(root, p, true);
+    }
+
+    private boolean contains(Point2D p, Node x) {
+        if (p.compareTo(x.key) == 0) return true;
+        if (x.vertical)
+            if (x.key.x() > p.x())
+                return contains(p, x.left);
+            else
+                return contains(p, x.right);
+        else
+        if (x.key.y() > p.y())
+            return contains(p, x.left);
+        else
+            return contains(p, x.right);
+    }
+
+    public boolean contains(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
+        if (isEmpty()) return false;
+        else return contains(p, root);
     }
 
     private ArrayList<Point2D> range(RectHV rect, Node x) {
@@ -108,7 +108,7 @@ public class KdTree {
         if (x == null) return;
         StdDraw.setPenColor();
         x.key.draw();
-        StdDraw.setPenRadius(0.001);
+//        StdDraw.setPenRadius(0.001);
         if (x.vertical) {
             StdDraw.setPenColor(StdDraw.RED);
             StdDraw.line(x.key.x(), 0.0, x.key.x(), 1.0);
@@ -123,7 +123,7 @@ public class KdTree {
 
     private Point2D nearest(Point2D query, Node x, Point2D nearest) {
         if (x == null) return nearest;
-        if (query.distanceTo(x.key) < query.distanceTo(nearest))
+        if (query.distanceSquaredTo(x.key) < query.distanceSquaredTo(nearest))
             nearest = x.key;
         if (x.vertical)
             if (x.key.x() > query.x())
@@ -147,21 +147,20 @@ public class KdTree {
 
     public static void main(String[] args) {
         KdTree kt = new KdTree();
-        int n = 0;
-        for (int i = 0; !StdIn.isEmpty(); i++) {
-            Double x = Double.parseDouble(StdIn.readString());
-            Double y = Double.parseDouble(StdIn.readString());
+        while (!StdIn.isEmpty()) {
+            double x = Double.parseDouble(StdIn.readString());
+            double y = Double.parseDouble(StdIn.readString());
             Point2D p = new Point2D(x, y);
             kt.insert(p);
             StdOut.println(p.toString());
-            n++;
         }
+
+        StdOut.println("size " + kt.size());
 
         double scale = 1.0;
         StdDraw.setCanvasSize(600, 600);
         StdDraw.setXscale(0, scale);
         StdDraw.setYscale(0, scale);
-        //        StdDraw.setPenColor(StdDraw.RED);
         StdDraw.setPenRadius(0.01);
         StdDraw.enableDoubleBuffering();
         kt.draw();

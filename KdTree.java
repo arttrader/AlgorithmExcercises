@@ -47,7 +47,8 @@ public class KdTree {
         if (x.vertical) cmp = Point2D.X_ORDER.compare(p, x.key);
         else cmp = Point2D.Y_ORDER.compare(p, x.key);
         if (cmp < 0) x.left = put(x.left, p, !vert);
-        else         x.right = put(x.right, p, !vert);
+        else if (cmp > 0) x.right = put(x.right, p, !vert);
+        else if (!contains(p, x)) x.right = put(x.right, p, !vert);
         x.size = 1 + size(x.left) + size(x.right);
         return x;
     }
@@ -81,16 +82,17 @@ public class KdTree {
         ArrayList<Point2D> r = new ArrayList<>();
         if (x == null) return r;
         if (rect.contains(x.key)) r.add(x.key);
-        if (x.vertical)
-            if (rect.xmax() < x.key.x())
+        if (x.vertical) {
+            if (rect.xmin() < x.key.x())
                 r.addAll(range(rect, x.left));
-            else
+            if (rect.xmax() > x.key.x())
                 r.addAll(range(rect, x.right));
-        else
-            if (rect.ymax() < x.key.y())
+        } else {
+            if (rect.ymin() < x.key.y())
                 r.addAll(range(rect, x.left));
-            else
+            if (rect.ymax() > x.key.y())
                 r.addAll(range(rect, x.right));
+        }
         return r;
     }
 
@@ -101,24 +103,29 @@ public class KdTree {
     }
 
     public void draw() {
-        draw(root);
+        draw(root, 0.0, 1.0, 0.0, 1.0);
+        StdDraw.show();
     }
 
-    private void draw(Node x) {
+    private void draw(Node x, double xmin, double xmax, double ymin, double ymax) {
         if (x == null) return;
         StdDraw.setPenColor();
+        StdDraw.setPenRadius(0.01);
         x.key.draw();
-//        StdDraw.setPenRadius(0.001);
+        StdDraw.setPenRadius(0.001);
         if (x.vertical) {
             StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.line(x.key.x(), 0.0, x.key.x(), 1.0);
+            StdDraw.line(x.key.x(), ymin, x.key.x(), ymax);
+            draw(x.left, xmin, x.key.x(), ymin, ymax);
+            draw(x.right, x.key.x(), xmax, ymin, ymax);
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.line(0.0, x.key.y(), 1.0, x.key.y());
+            StdDraw.line(xmin, x.key.y(), xmax, x.key.y());
+            draw(x.left, xmin, xmax, ymin, x.key.y());
+            draw(x.right, xmin, xmax, x.key.y(), ymax);
         }
-        StdDraw.show();
-        draw(x.left);
-        draw(x.right);
+
+
     }
 
     private Point2D nearest(Point2D query, Node x, Point2D nearest) {

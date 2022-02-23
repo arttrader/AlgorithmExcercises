@@ -26,6 +26,9 @@ public class KdTree {
             this.vertical = vert;
             size = 1;
         }
+
+        double x() { return key.x(); }
+        double y() { return key.y(); }
     }
 
     public boolean isEmpty() {
@@ -62,12 +65,12 @@ public class KdTree {
         if (x == null) return false;
         if (p.compareTo(x.key) == 0) return true;
         if (x.vertical)
-            if (x.key.x() > p.x())
+            if (x.x() > p.x())
                 return contains(p, x.left);
             else
                 return contains(p, x.right);
         else
-        if (x.key.y() > p.y())
+        if (x.y() > p.y())
             return contains(p, x.left);
         else
             return contains(p, x.right);
@@ -78,20 +81,20 @@ public class KdTree {
         else return contains(p, root);
     }
 
-    private ArrayList<Point2D> range(RectHV rect, Node x) {
+    private ArrayList<Point2D> range(RectHV rect, Node node) {
         ArrayList<Point2D> r = new ArrayList<>();
-        if (x == null) return r;
-        if (rect.contains(x.key)) r.add(x.key);
-        if (x.vertical) {
-            if (rect.xmin() < x.key.x())
-                r.addAll(range(rect, x.left));
-            if (rect.xmax() > x.key.x())
-                r.addAll(range(rect, x.right));
+        if (node == null) return r;
+        if (rect.contains(node.key)) r.add(node.key);
+        if (node.vertical) {
+            if (rect.xmin() <= node.x())
+                r.addAll(range(rect, node.left));
+            if (rect.xmax() >= node.x())
+                r.addAll(range(rect, node.right));
         } else {
-            if (rect.ymin() < x.key.y())
-                r.addAll(range(rect, x.left));
-            if (rect.ymax() > x.key.y())
-                r.addAll(range(rect, x.right));
+            if (rect.ymin() <= node.y())
+                r.addAll(range(rect, node.left));
+            if (rect.ymax() >= node.y())
+                r.addAll(range(rect, node.right));
         }
         return r;
     }
@@ -124,30 +127,48 @@ public class KdTree {
             draw(x.left, xmin, xmax, ymin, x.key.y());
             draw(x.right, xmin, xmax, x.key.y(), ymax);
         }
-
-
     }
 
-    private Point2D nearest(Point2D query, Node x, Point2D nearest) {
-        if (x == null) return nearest;
-        if (query.distanceSquaredTo(x.key) < query.distanceSquaredTo(nearest))
-            nearest = x.key;
-        if (x.vertical)
-            if (query.x() < x.key.x())
-                nearest = nearest(query, x.left, nearest);
-            else
-                nearest = nearest(query, x.right, nearest);
-        else
-            if (query.y() < x.key.y())
-                nearest = nearest(query, x.left, nearest);
-            else
-                nearest = nearest(query, x.right, nearest);
-
+    private Point2D nearest(Point2D query, Node node, Point2D nearest) {
+        if (node == null) return nearest;
+        double qnst = query.distanceSquaredTo(nearest);
+        double qnd = query.distanceSquaredTo(node.key);
+        if (qnd < qnst) {
+            nearest = node.key;
+            qnst = qnd;
+        }
+//        Point2D newNearest;
+        if (node.vertical) {
+            if (query.x() < node.x()) {
+                nearest = nearest(query, node.left, nearest);
+                qnst = query.distanceSquaredTo(nearest);
+                if (Math.pow(node.x()-query.x(), 2) < qnst)
+                    nearest = nearest(query, node.right, nearest);
+            } else {
+                nearest = nearest(query, node.right, nearest);
+                qnst = query.distanceSquaredTo(nearest);
+                if (Math.pow(node.x()-query.x(), 2) < qnst)
+                    nearest = nearest(query, node.left, nearest);
+            }
+        } else {
+            if (query.y() < node.y()) {
+                nearest = nearest(query, node.left, nearest);
+                qnst = query.distanceSquaredTo(nearest);
+                if (Math.pow(node.y()-query.y(), 2) < qnst)
+                    nearest = nearest(query, node.right, nearest);
+            } else {
+                nearest = nearest(query, node.right, nearest);
+                qnst = query.distanceSquaredTo(nearest);
+                if (Math.pow(node.y()-query.y(), 2) < qnst)
+                    nearest = nearest(query, node.left, nearest);
+            }
+        }
         return nearest;
     }
 
     public Point2D nearest(Point2D query) {
         if (query == null) throw new IllegalArgumentException();
+        if (isEmpty()) return null;
         return nearest(query, root, root.key);
     }
 

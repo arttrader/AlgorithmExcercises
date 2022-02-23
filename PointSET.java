@@ -49,6 +49,7 @@ PointSET {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null) throw new IllegalArgumentException();
         ArrayList<Point2D> a = new ArrayList<>();
         for (Point2D p : set)
             if (rect.contains(p)) a.add(p);

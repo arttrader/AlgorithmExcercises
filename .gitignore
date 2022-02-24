@@ -2,3 +2,4 @@
 .lift/*
 build/*
 *.class
+data/*

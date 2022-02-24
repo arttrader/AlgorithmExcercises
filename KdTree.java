@@ -106,52 +106,60 @@ public class KdTree {
     }
 
     public void draw() {
-        draw(root, 0.0, 1.0, 0.0, 1.0);
+        draw(root, 0.0, 1.0, 0.0, 1.0, 0);
         StdDraw.show();
     }
 
-    private void draw(Node x, double xmin, double xmax, double ymin, double ymax) {
+    private void draw(Node x, double xmin, double xmax, double ymin, double ymax, int index) {
         if (x == null) return;
         StdDraw.setPenColor();
         StdDraw.setPenRadius(0.01);
-        x.key.draw();
-        StdDraw.setPenRadius(0.001);
+        // x.key.draw();
+        // char c = (char)(index + 65);
         if (x.vertical) {
+            // StdDraw.text(x.key.x()+.02, x.key.y(), String.valueOf(c));
+            StdDraw.setPenRadius(0.001);
             StdDraw.setPenColor(StdDraw.RED);
             StdDraw.line(x.key.x(), ymin, x.key.x(), ymax);
-            draw(x.left, xmin, x.key.x(), ymin, ymax);
-            draw(x.right, x.key.x(), xmax, ymin, ymax);
+            draw(x.left, xmin, x.key.x(), ymin, ymax, ++index);
+            draw(x.right, x.key.x(), xmax, ymin, ymax, ++index);
         } else {
+            // StdDraw.text(x.key.x(), x.key.y()-.02, String.valueOf(c));
+            StdDraw.setPenRadius(0.001);
             StdDraw.setPenColor(StdDraw.BLUE);
             StdDraw.line(xmin, x.key.y(), xmax, x.key.y());
-            draw(x.left, xmin, xmax, ymin, x.key.y());
-            draw(x.right, xmin, xmax, x.key.y(), ymax);
+            draw(x.left, xmin, xmax, ymin, x.key.y(), ++index);
+            draw(x.right, xmin, xmax, x.key.y(), ymax, ++index);
         }
     }
 
     private Point2D nearest(Point2D query, Node node, Point2D nearest) {
+        // to optimize further, need to pass current boundary to children to check
+        // if there's chance of finding a nearer point
         if (node == null) return nearest;
         double qnst = query.distanceSquaredTo(nearest);
         double qnd = query.distanceSquaredTo(node.key);
         if (qnd < qnst) nearest = node.key;
         if (node.vertical) {
+            double xDist = node.x() - query.x();
             if (query.x() < node.x()) {
                 nearest = nearest(query, node.left, nearest);
-                if (node.right != null && Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
+                if (xDist*xDist < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.right, nearest);
             } else {
                 nearest = nearest(query, node.right, nearest);
-                if (node.left != null && Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
+                if (xDist*xDist < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.left, nearest);
             }
         } else {
+            double yDist = node.y() - query.y();
             if (query.y() < node.y()) {
                 nearest = nearest(query, node.left, nearest);
-                if (node.right != null && Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
+                if (yDist*yDist < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.right, nearest);
             } else {
                 nearest = nearest(query, node.right, nearest);
-                if (node.left != null && Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
+                if (yDist*yDist < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.left, nearest);
             }
         }
@@ -161,7 +169,7 @@ public class KdTree {
     public Point2D nearest(Point2D query) {
         if (query == null) throw new IllegalArgumentException();
         if (isEmpty()) return null;
-        return nearest(query, root, root.key);
+        return nearest(query, root, root.key, 0);
     }
 
 
@@ -184,6 +192,11 @@ public class KdTree {
         StdDraw.setPenRadius(0.01);
         StdDraw.enableDoubleBuffering();
         kt.draw();
+        Point2D qp = new Point2D(0.26, 0.47);
+        StdDraw.setPenColor();
+        StdDraw.setPenRadius(0.01);
+        qp.draw();
+        StdDraw.show();
     }
 
 }

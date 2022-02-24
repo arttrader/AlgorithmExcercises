@@ -133,45 +133,26 @@ public class KdTree {
         if (node == null) return nearest;
         double qnst = query.distanceSquaredTo(nearest);
         double qnd = query.distanceSquaredTo(node.key);
-        if (qnd < qnst) {
-            nearest = node.key;
-            qnst = qnd;
-        }
-        Point2D nn;
+        if (qnd < qnst) nearest = node.key;
         if (node.vertical) {
             if (query.x() < node.x()) {
-                nn = nearest(query, node.left, nearest);
-                    // if (nn.compareTo(nearest) == 0) {
-                qnst = query.distanceSquaredTo(nn);
-                if (Math.pow(node.x() - query.x(), 2) < qnst)
-                    nearest = nearest(query, node.right, nn);
-                else
-                    nearest = nn;
+                nearest = nearest(query, node.left, nearest);
+                if (Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
+                    nearest = nearest(query, node.right, nearest);
             } else {
-                nn = nearest(query, node.right, nearest);
-                    // if (nn.compareTo(nearest) == 0) {
-                qnst = query.distanceSquaredTo(nn);
-                if (Math.pow(node.x() - query.x(), 2) < qnst)
-                    nearest = nearest(query, node.left, nn);
-                else nearest = nn;
+                nearest = nearest(query, node.right, nearest);
+                if (Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
+                    nearest = nearest(query, node.left, nearest);
             }
         } else {
             if (query.y() < node.y()) {
-                nn = nearest(query, node.left, nearest);
-                // if (nn.compareTo(nearest) == 0) {
-                qnst = query.distanceSquaredTo(nn);
-                if (Math.pow(node.y() - query.y(), 2) < qnst)
-                    nearest = nearest(query, node.right, nn);
-                else
-                    nearest = nn;
+                nearest = nearest(query, node.left, nearest);
+                if (Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
+                    nearest = nearest(query, node.right, nearest);
             } else {
-                nn = nearest(query, node.right, nearest);
-                // if (nn.compareTo(nearest) == 0) {
-                qnst = query.distanceSquaredTo(nn);
-                if (Math.pow(node.y() - query.y(), 2) < qnst)
-                    nearest = nearest(query, node.left, nn);
-                else
-                    nearest = nn;
+                nearest = nearest(query, node.right, nearest);
+                if (Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
+                    nearest = nearest(query, node.left, nearest);
             }
         }
         return nearest;

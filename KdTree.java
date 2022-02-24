@@ -137,21 +137,21 @@ public class KdTree {
         if (node.vertical) {
             if (query.x() < node.x()) {
                 nearest = nearest(query, node.left, nearest);
-                if (Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
+                if (node.right != null && Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.right, nearest);
             } else {
                 nearest = nearest(query, node.right, nearest);
-                if (Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
+                if (node.left != null && Math.pow(node.x() - query.x(), 2) < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.left, nearest);
             }
         } else {
             if (query.y() < node.y()) {
                 nearest = nearest(query, node.left, nearest);
-                if (Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
+                if (node.right != null && Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.right, nearest);
             } else {
                 nearest = nearest(query, node.right, nearest);
-                if (Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
+                if (node.left != null && Math.pow(node.y() - query.y(), 2) < query.distanceSquaredTo(nearest))
                     nearest = nearest(query, node.left, nearest);
             }
         }

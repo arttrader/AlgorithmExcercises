@@ -1,17 +1,24 @@
 /* *****************************************************************************
- *  Name:              Ada Lovelace
- *  Coursera User ID:  123456
- *  Last modified:     October 16, 1842
+ *  Name:              J Hirota
+ *  Coursera User ID:
+ *  Last modified:     2022-1-31
  **************************************************************************** */
+
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdRandom;
 
 public class Ball {
     private double rx, ry;
     private double vx, vy;
     private final double radius;
 
-    public Ball(double r)
+    public Ball()
     {
-        radius = r;
+        radius = 0.01;
+        rx = StdRandom.uniform(0, 1.0);
+        ry = StdRandom.uniform(0, 1.0);
+        vx = StdRandom.uniform(0.01, 0.1);
+        vy = StdRandom.uniform(0.01, 0.1);
     }
 
     public void move(double dt)
@@ -23,8 +30,9 @@ public class Ball {
     }
 
     public void draw() {
-
+        StdDraw.filledCircle(rx, ry, radius);
     }
+
 
     public static void main(String[] args) {
 

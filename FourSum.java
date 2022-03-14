@@ -92,7 +92,7 @@ public class FourSum {
         StdOut.println(c);
     }
 
-    public void data() {
+    public void answer() {
         int c = 0;
         for (Node k : hm)
             if (k != null && k.isMoreThanOne()) {
@@ -124,9 +124,6 @@ public class FourSum {
         StdOut.println();
         FourSum f = new FourSum(a);
         f.bruteFourSum();
-        f.data();
-        // it.forEach(
-        //     x -> StdOut.printf("%s %s: %s %s\n", x.a(), x.b(), a[x.a()], a[x.b()])
-        // );
+        f.answer();
     }
 }

@@ -7,21 +7,21 @@
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdRandom;
 
-public class Particle {
+public class Particle1 {
     private double rx, ry;      // position
     private double vx, vy;
     private final double radius;
     private final double mass;
     private int count;          // number of collisions
 
-    public Particle() {
-        radius = 0.5;
+    public Particle1() {
+        radius = 0.006;
         mass = 0.5;
         count = 10;
         rx = StdRandom.uniform(0, 1.0);
         ry = StdRandom.uniform(0, 1.0);
-        vx = StdRandom.uniform(0.01, 0.1);
-        vy = StdRandom.uniform(0.01, 0.1);
+        vx = StdRandom.uniform(0.001, 0.01);
+        vy = StdRandom.uniform(0.001, 0.01);
     }
 
     public void move(double dt) {
@@ -36,7 +36,7 @@ public class Particle {
     }
 
     // predict collision with particle or wall
-    public double timeToHit(Particle that) {
+    public double timeToHit(Particle1 that) {
         if (this == that) return Double.POSITIVE_INFINITY;
         double dx  = that.rx - this.rx, dy  = that.ry - this.ry;
         double dvx = that.vx - this.vx;
@@ -55,7 +55,7 @@ public class Particle {
     public double timeToHitHorizontalWall() { return 0; }
 
     // resolve collision with particle or wall
-    public void bounceOff(Particle that) {
+    public void bounceOff(Particle1 that) {
         double dx  = that.rx - this.rx, dy  = that.ry - this.ry;
         double dvx = that.vx - this.vx, dvy = that.vy - this.vy;
         double dvdr = dx*dvx + dy*dvy;

@@ -7,14 +7,16 @@
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdRandom;
 
-public class Particle1 {
+public class Particle {
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
+
     private double rx, ry;      // position
     private double vx, vy;
     private final double radius;
     private final double mass;
     private int count;          // number of collisions
 
-    public Particle1() {
+    public Particle() {
         radius = 0.006;
         mass = 0.5;
         count = 10;
@@ -36,26 +38,34 @@ public class Particle1 {
     }
 
     // predict collision with particle or wall
-    public double timeToHit(Particle1 that) {
-        if (this == that) return Double.POSITIVE_INFINITY;
+    public double timeToHit(Particle that) {
+        if (this == that) return INFINITY;
         double dx  = that.rx - this.rx, dy  = that.ry - this.ry;
         double dvx = that.vx - this.vx;
         double dvy = that.vy - this.vy;
         double dvdr = dx*dvx + dy*dvy;
-        if (dvdr > 0) return Double.POSITIVE_INFINITY;
+        if (dvdr > 0) return INFINITY;
         double dvdv = dvx*dvx + dvy*dvy;
         double drdr = dx*dx + dy*dy;
         double sigma = this.radius + that.radius;
         double d = (dvdr*dvdr) - dvdv * (drdr - sigma*sigma);
-        if (d < 0) return Double.POSITIVE_INFINITY;
+        if (d < 0) return INFINITY;
         return -(dvdr + Math.sqrt(d)) / dvdv;
     }
 
-    public double timeToHitVerticalWall() { return 0; }
-    public double timeToHitHorizontalWall() { return 0; }
+    public double timeToHitVerticalWall() {
+        if      (vx > 0) return (1.0 - rx - radius) / vx;
+        else if (vx < 0) return (radius - rx) / vx;
+        else             return INFINITY;
+    }
+    public double timeToHitHorizontalWall() {
+        if      (vy > 0) return (1.0 - ry - radius) / vy;
+        else if (vy < 0) return (radius - ry) / vy;
+        else             return INFINITY;
+    }
 
     // resolve collision with particle or wall
-    public void bounceOff(Particle1 that) {
+    public void bounceOff(Particle that) {
         double dx  = that.rx - this.rx, dy  = that.ry - this.ry;
         double dvx = that.vx - this.vx, dvy = that.vy - this.vy;
         double dvdr = dx*dvx + dy*dvy;
@@ -71,8 +81,15 @@ public class Particle1 {
         that.count++;
     }
 
-    public void bounceOffVerticalWall() { }
-    public void bounceOffHorizontalWall() { }
+    public void bounceOffVerticalWall() {
+        vx = -vx;
+        count++;
+    }
+
+    public void bounceOffHorizontalWall() {
+        vy = -vy;
+        count++;
+    }
 
 
     public static void main(String[] args) {

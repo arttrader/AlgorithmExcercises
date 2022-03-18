@@ -16,8 +16,8 @@ public class Ball {
         radius = 0.006;
         rx = StdRandom.uniform(0, 1.0);
         ry = StdRandom.uniform(0, 1.0);
-        vx = StdRandom.uniform(0.001, 0.01);
-        vy = StdRandom.uniform(0.001, 0.01);
+        vx = StdRandom.uniform(-0.005, 0.005);
+        vy = StdRandom.uniform(-0.005, 0.005);
     }
 
     public void move(double dt) {

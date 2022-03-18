@@ -26,7 +26,12 @@ public class Combination {
         // "end-i+1 >= r-index" makes sure that including one element
         // at index will make a combination with remaining elements
         // at remaining positions
+        int scount = 0;
         for (int i = start; i <= end && end-i+1 >= r-index; i++) {
+            if (i > 0 && arr[i] == arr[i-1]) {
+                scount++;
+                if (scount > r) continue;
+            } else scount = 1;
             data[index] = arr[i];
             combinationUtil(arr, data, i+1, end, index+1, r);
         }

@@ -7,7 +7,7 @@
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdRandom;
 
-public class Particle {
+public class ParticleEx {
     private static final double INFINITY = Double.POSITIVE_INFINITY;
 
     private double rx, ry;      // position
@@ -16,19 +16,17 @@ public class Particle {
     private final double mass;
     private int count;          // number of collisions
 
-    public Particle() {
-        radius = 0.006;
+    public ParticleEx() {
+        radius = 0.02;
         mass = 0.5;
-        count = 10;
-        rx = StdRandom.uniform(0, 1.0);
-        ry = StdRandom.uniform(0, 1.0);
-        vx = StdRandom.uniform(0.001, 0.01);
-        vy = StdRandom.uniform(0.001, 0.01);
+        count = 0;
+        rx = StdRandom.uniform(0.0, 1.0);
+        ry = StdRandom.uniform(0.0, 1.0);
+        vx = StdRandom.uniform(-0.005, 0.005);
+        vy = StdRandom.uniform(-0.005, 0.005);
     }
 
     public void move(double dt) {
-        if (rx + vx * dt < radius || rx + vx * dt > 1.0 - radius) vx = -vx;
-        if (ry + vy * dt < radius || ry + vy * dt > 1.0 - radius) vy = -vy;
         rx = rx + vx * dt;
         ry = ry + vy * dt;
     }
@@ -38,7 +36,7 @@ public class Particle {
     }
 
     // predict collision with particle or wall
-    public double timeToHit(Particle that) {
+    public double timeToHit(ParticleEx that) {
         if (this == that) return INFINITY;
         double dx  = that.rx - this.rx, dy  = that.ry - this.ry;
         double dvx = that.vx - this.vx;
@@ -65,18 +63,22 @@ public class Particle {
     }
 
     // resolve collision with particle or wall
-    public void bounceOff(Particle that) {
-        double dx  = that.rx - this.rx, dy  = that.ry - this.ry;
-        double dvx = that.vx - this.vx, dvy = that.vy - this.vy;
-        double dvdr = dx*dvx + dy*dvy;
+    public void bounceOff(ParticleEx that) {
+        double dx  = that.rx - this.rx;
+        double dy  = that.ry - this.ry;
+        double dvx = that.vx - this.vx;
+        double dvy = that.vy - this.vy;
+        double dvdr = dx*dvx + dy*dvy;             // dv dot dr
         double dist = this.radius + that.radius;
-        double J = 2 * this.mass * that.mass * dvdr / ((this.mass + that.mass) * dist);
-        double Jx = J * dx / dist;
-        double Jy = J * dy / dist;
-        this.vx += Jx / this.mass;
-        this.vy += Jy / this.mass;
-        that.vx -= Jx / that.mass;
-        that.vy -= Jy / that.mass;
+        double magnitude = 2 * this.mass * that.mass * dvdr / ((this.mass + that.mass) * dist);
+        // normal force, and in x and y directions
+        double fx = magnitude * dx / dist;
+        double fy = magnitude * dy / dist;
+        // update velocities according to normal force
+        this.vx += fx / this.mass;
+        this.vy += fy / this.mass;
+        that.vx -= fx / that.mass;
+        that.vy -= fy / that.mass;
         this.count++;
         that.count++;
     }

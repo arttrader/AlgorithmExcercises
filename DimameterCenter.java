@@ -20,6 +20,8 @@ public class DimameterCenter {
     public Iterable<Integer> diameter() {
         // for each vertex
         // find distance to each vertex
+        // return the longest
+
 
         return null;
     }
@@ -28,6 +30,7 @@ public class DimameterCenter {
         // for each vertex
         // find the longest distance to any vertex
         // choose the one with the shortest
+
 
         return 0;
     }
@@ -41,6 +44,5 @@ public class DimameterCenter {
         for (int v = 0; v < G.V(); v++) {
 
         }
-
     }
 }

@@ -28,9 +28,9 @@ public class EulerCycle {
     }
 
     private void findEulerPath(int v, List<Integer> list) {
+        marked[v] = true;
         for (int a: g.adj(v)) {
             if (!marked[a]) {
-                marked[a] = true;
                 findEulerPath(a, list);
             }
         }

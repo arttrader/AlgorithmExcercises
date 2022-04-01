@@ -45,6 +45,19 @@ public class DFSNonRecursive {
         }
     }
 
+    public int distTo(int v) {
+        return distTo[v];
+    }
+
+    public Iterable<Integer> pathTo(int v) {
+        Stack<Integer> path = new Stack<Integer>();
+        int x;
+        for (x = v; distTo[x] != 0; x = edgeTo[x])
+            path.push(x);
+        path.push(x);
+        return path;
+    }
+
     public boolean marked(int v) {
         return marked[v];
     }

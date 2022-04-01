@@ -10,31 +10,38 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class DFSNonRecursive {
-    private boolean[] marked;
+    private boolean[] marked; // marked[v] = is there an s-v path
+    private int[] edgeTo;   // edgeTo[v] = previous edge on shortest s-v path
+    private int[] distTo;   // distTo[v] = number of edges shortest s-v path
     private int count;
-    private final Stack<Integer> stack;
 
     public DFSNonRecursive(Graph G, int s) {
         marked = new boolean[G.V()];
-        stack = new Stack<>();
+        distTo = new int[G.V()];
+        edgeTo = new int[G.V()];
         dfs(G, s);
     }
 
-    private void dfs(Graph G, int v) {
-        count++;
-        marked[v] = true;
-        boolean done = false;
-        int w = v;
-        while (!done) {
-            stack.push(w);
-            for (int x: G.adj(w)) {
-                if (!marked[x]) {
-                    w = x;
-                    break;
+    private void dfs(Graph G, int s) {
+        Stack<Integer> stack = new Stack<>();
+        for (int v = 0; v < G.V(); v++)
+            distTo[v] = Integer.MAX_VALUE;
+        distTo[s] = 0;
+        marked[s] = true;
+        count = 1;
+        stack.push(s);
+
+        while (!stack.isEmpty()) {
+            int v = stack.pop();
+            for (int w: G.adj(v)) {
+                if (!marked[w]) {
+                    count++;
+                    edgeTo[w] = v;
+                    distTo[w] = distTo[v] + 1;
+                    marked[w] = true;
+                    stack.push(w);
                 }
             }
-            if (stack.isEmpty()) done = true;
-            else w = stack.pop();
         }
     }
 
@@ -45,7 +52,6 @@ public class DFSNonRecursive {
     public int count() {
         return count;
     }
-
 
     public static void main(String[] args) {
         In in = new In(args[0]);

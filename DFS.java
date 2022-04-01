@@ -9,13 +9,14 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
-public class DFSNonRecursive {
+// Non-recursive DFS
+public class DFS {
     private boolean[] marked; // marked[v] = is there an s-v path
     private int[] edgeTo;   // edgeTo[v] = previous edge on shortest s-v path
     private int[] distTo;   // distTo[v] = number of edges shortest s-v path
     private int count;
 
-    public DFSNonRecursive(Graph G, int s) {
+    public DFS(Graph G, int s) {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
@@ -35,21 +36,29 @@ public class DFSNonRecursive {
             int v = stack.pop();
             for (int w: G.adj(v)) {
                 if (!marked[w]) {
-                    count++;
                     edgeTo[w] = v;
                     distTo[w] = distTo[v] + 1;
                     marked[w] = true;
+                    count++;
                     stack.push(w);
                 }
             }
         }
     }
 
+    public boolean hasPathTo(int v) {
+        validateVertex(v);
+        return marked[v];
+    }
+
     public int distTo(int v) {
+        validateVertex(v);
         return distTo[v];
     }
 
     public Iterable<Integer> pathTo(int v) {
+        validateVertex(v);
+        if (!hasPathTo(v)) return null;
         Stack<Integer> path = new Stack<Integer>();
         int x;
         for (x = v; distTo[x] != 0; x = edgeTo[x])
@@ -66,11 +75,18 @@ public class DFSNonRecursive {
         return count;
     }
 
+    private void validateVertex(int v) {
+        int V = marked.length;
+        if (v < 0 || v >= V)
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+    }
+
+
     public static void main(String[] args) {
         In in = new In(args[0]);
         Graph G = new Graph(in);
         int s = Integer.parseInt(args[1]);
-        DFSNonRecursive search = new DFSNonRecursive(G, s);
+        DFS search = new DFS(G, s);
         for (int v = 0; v < G.V(); v++) {
             if (search.marked(v))
                 StdOut.print(v + " ");

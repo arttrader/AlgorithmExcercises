@@ -8,50 +8,55 @@ import edu.princeton.cs.algs4.Graph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class EulerCycle {
     private final Graph g;
     private boolean[] marked;
+    private boolean hasCycle;
+    private boolean eulerCycle;
+    private int count;
+    private boolean[][] edgeMarked;
+    private int last;
 
     public EulerCycle(Graph G) {
-        g = new Graph(G);
-        marked = new boolean[G.E()];
+        g = G;
+        marked = new boolean[g.V()];
+        edgeMarked = new boolean[g.V()][g.V()];
+        last = -1;
+        dfs(0, 0);
     }
 
-    public boolean eulerCycle() {
-        for (int i = 0; i < g.V(); i++) {
-            if (g.degree(i) % 2 != 0) return false;
-        }
-        return true;
-    }
-
-    private void findEulerPath(int v, List<Integer> list) {
+    private void dfs(int v, int u) {
         marked[v] = true;
-        for (int a: g.adj(v)) {
-            if (!marked[a]) {
-                findEulerPath(a, list);
+        if (v != u) {
+            edgeMarked[v][u] = true;
+            edgeMarked[u][v] = true;
+            count++;
+        }
+        for (int w: g.adj(v)) {
+            if (marked[w] && w != u) hasCycle = true;
+            if (!edgeMarked[w][v]) {
+                last = w;
+                StdOut.println(v + "-" + w + " ");
+                dfs(w, v);
             }
         }
-        list.add(v);
-        marked[v] = true;
+        if (v == u) { // first recursive call
+            StdOut.printf("v %s   last %s   count %s  \n", v, last, count);
+            if (count == g.E() && last == v)
+                eulerCycle = true;
+        }
     }
 
-    public Iterable<Integer> findEulerCycle() {
-        List<Integer> list = new ArrayList<>();
-        findEulerPath(0, list);
-        return list;
-    }
+    public boolean hasCycle() { return hasCycle; }
+
+    public boolean hasEulerCycle() { return eulerCycle; }
+
 
     public static void main(String[] args) {
         In in = new In(args[0]);
         Graph G = new Graph(in);
-        EulerCycle e = new EulerCycle(G);
-        if (e.eulerCycle()) {
-            StdOut.println("Euler Cycle");
-            Iterable<Integer> it = e.findEulerCycle();
-            StdOut.println(it);
-        }
+        EulerCycle c = new EulerCycle(G);
+        if (c.hasCycle()) StdOut.println("Has cycle");
+        if (c.hasEulerCycle()) StdOut.println("Has Euler Cycle");
     }
 }

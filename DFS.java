@@ -15,11 +15,13 @@ public class DFS {
     private int[] edgeTo;   // edgeTo[v] = previous edge on shortest s-v path
     private int[] distTo;   // distTo[v] = number of edges shortest s-v path
     private int count;
+    private int s;
 
     public DFS(Graph G, int s) {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
+        this.s = s;
         dfs(G, s);
     }
 
@@ -29,7 +31,7 @@ public class DFS {
             distTo[v] = Integer.MAX_VALUE;
         distTo[s] = 0;
         marked[s] = true;
-        count = 1;
+        count = 0;
         stack.push(s);
 
         while (!stack.isEmpty()) {
@@ -46,6 +48,13 @@ public class DFS {
         }
     }
 
+/*  Is there a path between the source vertex s and vertex v?
+    Params:
+        v – the vertex
+    Returns:
+        true if there is a path, false otherwise
+    Throws:
+        IllegalArgumentException – unless 0 <= v < V */
     public boolean hasPathTo(int v) {
         validateVertex(v);
         return marked[v];
@@ -59,11 +68,10 @@ public class DFS {
     public Iterable<Integer> pathTo(int v) {
         validateVertex(v);
         if (!hasPathTo(v)) return null;
-        Stack<Integer> path = new Stack<Integer>();
-        int x;
-        for (x = v; distTo[x] != 0; x = edgeTo[x])
+        Stack<Integer> path = new Stack<>();
+        for (int x = v; distTo[x] != 0; x = edgeTo[x])
             path.push(x);
-        path.push(x);
+        path.push(s);
         return path;
     }
 
@@ -85,14 +93,19 @@ public class DFS {
     public static void main(String[] args) {
         In in = new In(args[0]);
         Graph G = new Graph(in);
-        int s = Integer.parseInt(args[1]);
+        int s = 0;
         DFS search = new DFS(G, s);
         for (int v = 0; v < G.V(); v++) {
-            if (search.marked(v))
-                StdOut.print(v + " ");
+            StdOut.print(s + " to " + v + ": ");
+            if (search.hasPathTo(v))
+                for (int x : search.pathTo(v))
+                    if (x == s) StdOut.print(x);
+                    else StdOut.print("-" + x);
+            StdOut.println();
         }
 
         StdOut.println();
+        StdOut.println("count: " + search.count());
         if (search.count() != G.V()) StdOut.println("NOT connected");
         else                         StdOut.println("connected");
     }

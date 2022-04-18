@@ -7,6 +7,7 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdOut;
 
 public class DBFS {
     private boolean[] marked;
@@ -25,10 +26,12 @@ public class DBFS {
         while (!q.isEmpty()) {
             int v = q.dequeue();
             for (int w: G.adj(v)) {
-                q.enqueue(w);
-                marked[w] = true;
-                edgeTo[w] = v;
-                distTo[w] = distTo[v] + 1;
+                if (!marked[w]) {
+                    q.enqueue(w);
+                    marked[w] = true;
+                    edgeTo[w] = v;
+                    distTo[w] = distTo[v] + 1;
+                }
             }
         }
     }
@@ -40,7 +43,9 @@ public class DBFS {
 
     public static void main(String[] args) {
         In in = new In(args[0]);
+        int s = 0;
         Digraph G = new Digraph(in);
-        DBFS bfs = new DBFS(G, 0);
+        DBFS bfs = new DBFS(G, s);
+        StdOut.println("marked " + bfs.visited(5));
     }
 }

@@ -38,7 +38,7 @@ public class DimameterCenter {
             int d = bfp.distTo(i);
             if (d > longest) {
                 longest2 = longest;
-                longestV2 = i;
+                longestV2 = longestV;
                 longest = d;
                 longestV = i;
             }

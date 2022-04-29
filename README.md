@@ -1,3 +1,3 @@
 # AlgorithmClass
 
-Repository for all the trial, experimental code for the class.
+Repository for all the trial, experimental, and assignment submission code for the online Princeton Algorithm class.

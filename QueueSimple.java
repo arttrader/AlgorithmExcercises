@@ -6,7 +6,7 @@
 
 import edu.princeton.cs.algs4.StdOut;
 
-public class Queue {
+public class QueueSimple {
     private Node first, last;
 
     private class Node {
@@ -39,7 +39,7 @@ public class Queue {
     }
 
     public static void main(String[] args) {
-        Queue q = new Queue();
+        QueueSimple q = new QueueSimple();
         q.enqueue("test1");
         q.enqueue("test2");
         StdOut.println(q.dequeue());

@@ -12,6 +12,10 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+Shortest directed cycle.
+Given a digraph G, design an efficient algorithm to find a directed cycle with the minimum number of edges (or report that the graph is acyclic). The running time of your algorithm should be at most proportional to V(E+V) and use space proportional to E+V, where V is the number of vertices and E is the number of edges.
+ */
 public class ShortestCycle {
     private boolean[] marked;
     private int[] edgeTo;
@@ -77,6 +81,7 @@ public class ShortestCycle {
         ShortestCycle dc = new ShortestCycle(G);
         StdOut.println("Has cycle: " + dc.hasCycle());
         if (dc.hasCycle()) {
+            StdOut.println("Shortest cycle");
             Iterable<Integer> cycle = dc.cycle();
             for (int v: cycle)
                 StdOut.print(v + " ");

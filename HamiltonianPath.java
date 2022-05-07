@@ -1,85 +1,47 @@
 /* *****************************************************************************
  *  Name:              J Hirota
  *  Coursera User ID:
- *  Last modified:     2022-4-18
+ *  Last modified:     2022-5-7
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/*
+Hamiltonian path in a DAG.
+Given a directed acyclic graph, design a linear-time algorithm to determine whether it has a Hamiltonian path (a simple path that visits every vertex), and if so, find one.
+ */
 public class HamiltonianPath {
-    private boolean[] marked;
-    private int[] edgeTo;
-    private Stack<Integer> stack;
-    private List<Stack<Integer>> cycles;
-    private boolean[] onStack;
+    private BreadthFirstDirectedPaths bfs;
+    private Digraph g;
 
     public HamiltonianPath(Digraph G) {
-        onStack = new boolean[G.V()];
-        edgeTo = new int[G.V()];
-        marked = new boolean[G.V()];
-        cycles = new ArrayList<>();
-        for (int v = 0; v < G.V(); v++)
-            if (!marked[v]) dfs(G, v);
-        int shortest = Integer.MAX_VALUE;
-        for (Stack<Integer> cycle : cycles)
-            if (cycle.size() < shortest) {
-                stack = cycle;
-                shortest = cycle.size();
-            }
+        g = G;
+        bfs = new BreadthFirstDirectedPaths(G, 0);
     }
 
-    private void dfs(Digraph G, int v) {
-        StdOut.println("Checking " + v);
-        onStack[v] = true;
-        marked[v] = true;
-        for (int w: G.adj(v))
-            if (this.hasCycle()) {
-                StdOut.println("Cycle found: length=" + stack.size());
-                for (int i: stack)
-                    StdOut.print(i + " ");
-                StdOut.println();
-                cycles.add(stack);
-                stack = null;
-                onStack[v] = false;
-                return;
-            } else if (!marked[w]) {
-                edgeTo[w] = v;
-                dfs(G, w);
-            } else if (onStack[w]) {
-                stack = new Stack<>();
-                for (int x = v; x != w; x = edgeTo[x])
-                    stack.push(x);
-                stack.push(w);
-                stack.push(v);
-            }
-        onStack[v] = false;
+    public boolean isHamiltonian() {
+        for (int v = 0; v < g.V(); v++) {
+            if (!bfs.hasPathTo(v)) return false;
+        }
+        return true;
     }
 
-    public boolean hasCycle() {
-        return stack != null;
+    public Iterable<Integer> path(int v) {
+        return bfs.pathTo(v);
     }
-
-    public Iterable<Integer> cycle() {
-        return stack;
-    }
-
 
     public static void main(String[] args) {
         In in = new In(args[0]);
         int s = 0;
         Digraph G = new Digraph(in);
-        HamiltonianPath dc = new HamiltonianPath(G);
-        StdOut.println("Has cycle: " + dc.hasCycle());
-        if (dc.hasCycle()) {
-            Iterable<Integer> cycle = dc.cycle();
-            for (int v: cycle)
-                StdOut.print(v + " ");
-        }
+        HamiltonianPath hp = new HamiltonianPath(G);
+        if (hp.isHamiltonian())
+            StdOut.println("Hamiltonian path found");
+        else
+            StdOut.println("No Hamiltonian path");
+
     }
 }
